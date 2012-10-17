@@ -1,5 +1,25 @@
 FEIDIAN CHANGE LOG
 
+- v0.86 -
+* If you need to interleave every pixel (like GBA does), just add
+  "$interleave=1;" to your tile definition. This would transform 01234567 into
+  10325476, which some systems do. The interleave is performed AFTER all
+  planes have been merged, so if you needed to interleave only certain planes
+  (which would be absolutely psychotic from a development standpoint) you
+  would still need to make a custom dump/insert routine in the tile
+  definition.
+* Changed the copyright tag
+
+- v0.85a -
+* Fixed a glitch with tile padding whicha ppears to have been present for
+  several versions. Padding by an odd integer width will break. The reason is
+  yet unknown (it SHOULD be making valid bitmap widths and appears to expand
+  the tiles properly...). For now, FEIDIAN just blocks you from using odd
+  integers. There were also some other fixes and speed-ups ot the pad code.
+* Not directly included, but there's now a tile definition for
+  Game Boy Advance on the website made thanks to some information on the
+  format provided by Kojiro Sasaki.
+
 - v0.85 -
 * Fixed an severe error (set $bit2 twice) that was causing all 3bpp insertion
   to break.

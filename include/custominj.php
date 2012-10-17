@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.85
+    Version: 0.86
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -91,6 +91,14 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
         }
       }
       unset($tile);
+    }
+    // Check if we need to deinterleave pixels
+    if($interleave>0) {
+      $bitplane_new = "";
+      for ($z=0; $z<strlen($bitplane); $z+=2)
+        $bitplane_new .= $bitplane[$z+1] . $bitplane[$z];
+      $bitplane = $bitplane_new;
+      unset($bitplane_new);
     }
     $hackplane = "";
     // The routine matches the characters in our pattern definition to
@@ -182,6 +190,14 @@ function bmp2cust2bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       }
     }
     unset($tile);
+  }
+  // Check if we need to deinterleave pixels
+  if($interleave>0) {
+    $bitplane_new = "";
+    for ($z=0; $z<strlen($bitplane); $z+=2)
+      $bitplane_new .= $bitplane[$z+1] . $bitplane[$z];
+    $bitplane = $bitplane_new;
+    unset($bitplane_new);
   }
   $bitplane1="";
   $bitplane2="";
@@ -299,6 +315,14 @@ function bmp2cust3bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       }
     }
     unset($tile);
+  }
+  // Check if we need to deinterleave pixels
+  if($interleave>0) {
+    $bitplane_new = "";
+    for ($z=0; $z<strlen($bitplane); $z+=2)
+      $bitplane_new .= $bitplane[$z+1] . $bitplane[$z];
+    $bitplane = $bitplane_new;
+    unset($bitplane_new);
   }
   $bitplane1="";
   $bitplane2="";
@@ -429,6 +453,14 @@ function bmp2cust4bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       }
     }
     unset($tile);
+  }
+  // Check if we need to deinterleave pixels
+  if($interleave>0) {
+    $bitplane_new = "";
+    for ($z=0; $z<strlen($bitplane); $z+=2)
+      $bitplane_new .= $bitplane[$z+1] . $bitplane[$z];
+    $bitplane = $bitplane_new;
+    unset($bitplane_new);
   }
   $bitplane1="";
   $bitplane2="";

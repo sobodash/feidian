@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.85
+    Version: 0.86
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -122,6 +122,14 @@ function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
         else die("What'chu talkin' bout Willis?\n");
       }
       $bitmap = $invertmap;
+    }
+    // Check if we need to interleave pixels
+    if($interleave>0) {
+      $bitmap_new = "";
+      for ($z=0; $z<strlen($bitmap); $z+=2)
+        $bitmap_new .= $bitmap[$z+1] . $bitmap[$z];
+      $bitmap = $bitmap_new;
+      unset($bitmap_new);
     }
     if(GRAPHIC_FORMAT=="xpm") {
       $color0 = "#000000";
@@ -246,6 +254,14 @@ function cust2bpp2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       }
     }
   }
+  // Check if we need to interleave pixels
+  if($interleave>0) {
+    $bitmap_new = "";
+    for ($z=0; $z<strlen($bitmap); $z+=2)
+      $bitmap_new .= $bitmap[$z+1] . $bitmap[$z];
+    $bitmap = $bitmap_new;
+    unset($bitmap_new);
+  }
   if(GRAPHIC_FORMAT=="xpm") {
     $color0 = "#" . str_pad(dechex($color0[0]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[1]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[2]), 2, "0", STR_PAD_LEFT);
     $color1 = "#" . str_pad(dechex($color1[0]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color1[1]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color1[2]), 2, "0", STR_PAD_LEFT);
@@ -368,6 +384,14 @@ function cust3bpp2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       	$bitmap .= strrev($line[$i][$z]);
       }
     }
+  }
+  // Check if we need to interleave pixels
+  if($interleave>0) {
+    $bitmap_new = "";
+    for ($z=0; $z<strlen($bitmap); $z+=2)
+      $bitmap_new .= $bitmap[$z+1] . $bitmap[$z];
+    $bitmap = $bitmap_new;
+    unset($bitmap_new);
   }
   if(GRAPHIC_FORMAT=="xpm") {
     $color0 = "#" . str_pad(dechex($color0[0]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[1]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[2]), 2, "0", STR_PAD_LEFT);
@@ -512,6 +536,14 @@ function cust4bpp2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
       	$bitmap .= strrev($line[$i][$z]);
       }
     }
+  }
+  // Check if we need to interleave pixels
+  if($interleave>0) {
+    $bitmap_new = "";
+    for ($z=0; $z<strlen($bitmap); $z+=2)
+      $bitmap_new .= $bitmap[$z+1] . $bitmap[$z];
+    $bitmap = $bitmap_new;
+    unset($bitmap_new);
   }
   if(GRAPHIC_FORMAT=="xpm") {
     $color0 = "#" . str_pad(dechex($color0[0]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[1]), 2, "0", STR_PAD_LEFT) . str_pad(dechex($color0[2]), 2, "0", STR_PAD_LEFT);

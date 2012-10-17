@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.85
+    Version: 0.86
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -31,6 +31,8 @@
 // padtile - pads a tile by cols,rows
 //-----------------------------------------------------------------------------
 function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $out_file) {
+  if(($tile_width + $pad_width) % 2 > 0)
+    die(print "ERROR: Please pad by a multiple width (height can be odd).\n");
   // Create a file suffix specifying font width/height
   $prefix = $tile_width . "x" . $tile_height;
   print "Converting to bitplane...\n";
@@ -44,7 +46,7 @@ function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $
       $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
     }
     else {
-      $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+      $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
     }
   }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
@@ -69,13 +71,11 @@ function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $
   print ($rows*$columns) . " tiles read!\nPadding tiles...\n";
   print "  Padding by +" . $pad_width . "x" . $pad_height . " per tile...\n";
   $bit_rows=array(); $z=0;
-  for($i=0; $i<strlen($bitplane); $i=$i+$tile_height){
-    $bit_rows[$z]=substr($bitplane, $i, $tile_height);
-    $z++;
+  for($i=0; $i<strlen($bitplane)/$tile_width; $i++){
+    $bit_rows[$i]=substr($bitplane, $i*$tile_width, $tile_width);
   }
   $binarydump="";
   for($i=0; $i<count($bit_rows); $i++)
-    //print "row $i\n";
     for($k=0; $k<$pad_width; $k++)
       $bit_rows[$i].="0";
   for($i=0; $i<count($bit_rows); $i++){
