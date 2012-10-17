@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -55,7 +55,7 @@ function tile2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_fi
 		}
 	}
 	$fo = fopen($out_file . "_$prefix.BMP", "wb");
-	fputs($fo, bitmapheader(strlen($bitmap), $tile_width*$columns, $rows*$tile_height) . strrev($bitmap));
+	fputs($fo, bitmapheader_1bpp(strlen($bitmap), $tile_width*$columns, $rows*$tile_height) . strrev($bitmap));
 	fclose($fo);
 	print $out_file . "_$prefix.BMP was written!\n\n";
 	fclose($fd);

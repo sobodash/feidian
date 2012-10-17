@@ -1,5 +1,38 @@
 FEIDIAN CHANGE LOG
 
+- v0.8a -
+* Major fix to the custom tile routine. The new hirearchy for custom tile
+  letters is: [A-Z] [a-z] [2-9] [!?@*]
+
+- v0.8 -
+* COLOR! COLOR! AND THEN MORE COLOR! I fianlly got around to it. This means
+  there are a few changes to the tile definition format. You can download any
+  of the sample definitions (they've all been edited for compatability) from
+  the page and have a look, or check out the definition template that comes
+  with FEIDIAN now. Currently, all formats, 16 colors or under, in Klarth's
+  console graphics document are supported, as well as some others. This means:
+    -   8x8 2bpp NES
+    - 16x16 2bpp NES
+    -   8x8 2bpp SNES/Gameboy/GBC
+    -   8x8 2bpp NeoGeo Pocket Color
+    -   8x8 2bpp Virtual Boy
+    -   8x8 3bpp SNES
+    -   8x8 4bpp SNES/PC-Engine
+    -   8x8 4bpp Game Gear/SMS/Wonderswan Color
+    -   8x8 4bpp Megadrive/X68000
+  There's also a few other tile definitions in development (I hear Kitsune is
+  doing an MSX definition, which apparantly NOTHING supports).
+* Tile definitions can now include their own dump and insert functions (for
+  any adventurous programmers out there). This probably isn't necessary, but
+  it's nice to have available.
+* Tile definitions support planar or linear byte arrangement (compatability
+  with Virtual Boy and NeoGeo Pocket Color)
+* Speed-up to tile padding.
+
+- v0.7 (development only) -
+* Fixed some of the existing code for compatability with 16-color bitmaps in
+  preparation for v0.8.
+
 - v0.6 -
 * Tile padding has been added. You can now increase a tile's size by any x,y
   pixels without scaling the tile contents. 0 is assumed as the transparent

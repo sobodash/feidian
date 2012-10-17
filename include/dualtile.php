@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -49,8 +49,12 @@ function bit2tile($tile_height, $tile_width, $tile_list, $in_file, $out_file) {
 	// Create a file suffix specifying font width/height
 	$prefix = $tile_width . "x" . $tile_height;
 	print "Injecting $prefix into $out_file...\n";
-
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	if($bpp==4) {
+		$bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	}
 
 	$ptr=0; $bitplane = "";
 	print "  Converting bitmap to bitplane...\n";
@@ -107,12 +111,27 @@ function bit2tile($tile_height, $tile_width, $tile_list, $in_file, $out_file) {
 	$bitmap2 = "";
 	$bitmap = strrev($bitmap);
 	// Transform back from bit string to data
-	for($i=0; $i<strlen($bitmap)/8; $i++)
-		$bitmap2 .= chr(bindec(substr($bitmap, $i*8, 8)));
+	if($bpp==4) {
+		for($i=0; $i<strlen($bitmap)/2; $i++)
+			$bitmap2 .= chr(hexdec(substr($bitmap, $i*2, 2)));
+	}
+	else {
+		for($i=0; $i<strlen($bitmap)/8; $i++)
+			$bitmap2 .= chr(bindec(substr($bitmap, $i*8, 8)));
+	}
 	$bitmap = strrev($bitmap2);
 	
 	$fo = fopen($out_file . "_$prefix.BMP", "wb");
-	fputs($fo, bitmapheader(strlen($bitmap), $tile_width*$columns, $rows*$tile_height) . strrev($bitmap));
+	if($bpp==4) {
+		$fd=fopen($in_file, "rb");
+		fseek($fd, 0x36, SEEK_SET);
+		$palette=fread($fd, 64);
+		fclose($fd);
+		fputs($fo, bitmapheader_xbpp(strlen($bitmap), $tile_width*$columns, $rows*$tile_height, $palette) . strrev($bitmap));
+	}
+	else {
+		fputs($fo, bitmapheader_1bpp(strlen($bitmap), $tile_width*$columns, $rows*$tile_height) . strrev($bitmap));
+	}
 	fclose($fo);
 	print $out_file . "_$prefix.BMP was written!\n\n";
 }

@@ -2,8 +2,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -24,7 +24,7 @@
 
 include("include/subs.php");
 
-echo ("\nFEIDIAN\nV0.6 Copyright (C) 2003, 2004 Derrick Sobodash\n");
+echo ("\nFEIDIAN\nV0.8 Copyright (C) 2003, 2004 Derrick Sobodash\n");
 set_time_limit(6000000);
 
 if ($argc < 5) { DisplayOptions(); die; }

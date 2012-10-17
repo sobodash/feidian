@@ -1,7 +1,7 @@
 
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -11,7 +11,7 @@ Please read changes.txt for information about newly supported commands.
 
 For reference, this README is really more of a case study to give the user a
 feel for how this program can actually be applied to real scenarios. I think
-something like this helps people ot see the actual value of a program a lot
+something like this helps people to see the actual value of a program a lot
 more than just a list of commands would.
 
 -------------------------------------------------------------------------------
@@ -22,9 +22,12 @@ more than just a list of commands would.
  iii.. Creating a custom tile definition
  iv... Extracting a font
  v.... Inserting a font
- vi... Building a dual-letter font
- vii.. Other Notes
- viii. License
+ vi... Color tiles/Multiple planes
+ vii.. Scaling and padding
+ viii. Building a dual-letter font
+ ix... BCR (Binary Character Recognition)
+ x.... Other Notes
+ xi... License
 
 -------------------------------------------------------------------------------
  i. What is FEIDIAN?
@@ -32,12 +35,11 @@ more than just a list of commands would.
 So you've downloaded FEIDIAN. I'm already impressed. Nobody EVER uses anything
 I write, so I'm just, wow, I'm impressed.
 
-So what is FEIDIAN? FEIDIAN is a tool for going between monochrome bitmap and
-monochrome bitplane (aka 1bpp) graphic formats at any size whatsoever. If
-you're new to the concept of bitplane graphics, basically it works like this.
-You have a tile. It can be any width and any height. And tiles of this size
-are repeated again and again for as long as whatever is getting stores is
-being stored.
+So what is FEIDIAN? FEIDIAN is a tool for converting between bitmap and
+bitplane graphic formats at any size whatsoever. If you're new to the concept
+of bitplane graphics, basically it works like this. You have a tile. It can be
+any width and any height. And tiles of this size are repeated again and again
+for as long as whatever is getting stored is being stored.
 
 -------------------------------------------------------------------------------
  ii. Standard bitplane font format
@@ -105,8 +107,8 @@ example, we would write:
 Easy! Next, we need to define out above pattern. Well let's think carefully, so
 we can keep our pattern as lean as possible. In the above example, the pattern
 repeats itself after byte C. So that means, we only need to define up to that.
-  $byte_order  = "AAAAAAAABBBB
-                  CCCCCCCCBBBB";
+  $plane1  = "AAAAAAAABBBB
+              CCCCCCCCBBBB";
 Voila. You have just defined your byte pattern. That was the hardest part! The
 only thing left is to say how many bytes are needed for the pattern. In this
 case, it's three bytes (A, B and C). So we'll put:
@@ -184,7 +186,7 @@ output_12x12.bmp we just made an crack it open in Paintbrush. Flood the thing
 with black and bust open the text tool (white text, black background). Make
 a big textbox and type something fun, like
 
-  "I ABSOLUTELY DESPISE HOW ANNOYING
+  I ABSOLUTELY DESPISE HOW ANNOYING
   THE STUPID SSH SYSTEM IS FOR
   UPLOADING NEW FILES.
 
@@ -198,18 +200,69 @@ game right now (unless you inserted a string of all those first tiles in a row),
 but this shows how FEIDIAN can insert a graphic back into the game.
 
 -------------------------------------------------------------------------------
- vi. Building a dual-letter font
+ vi. Color tiles/Multiple planes
+-------------------------------------------------------------------------------
+Color is a wonderful thing. It's what allows us to have games more complicated
+than TI-Calculator games and Pong. But color takes more than what default
+monochrome dumping can cover. To do color, we'll need to return to custom
+tiles.
+
+Remember how we previously defined a pattern for $plane1? Well, to make colors,
+we need to layer planes. We can define multiple planes up to 4 for use with
+FEIDIAN.
+
+An explanation of console graphic storage is a bit beyond the scope of this
+document. If you're interested in it, I suggest you head to romhacking.com and
+read Klarth's document on Console Graphics. This document will focus more on
+dumping color from an end-user perspective.
+
+FEIDIAN does not ship with color support. To do color tiles, you will need to
+download the appropriate tile definitions from the FEIDIAN website and install
+them in your /tiles/ folder. All formats explained in Karth's document have
+already been supported, so you won't need to design them yourself.
+
+Once you have it installed, you can find graphics using Nana or your favorite
+tile editor (since Nana can't do some layerings that tile editors might), then
+just dump how you normally would using a custom tile.
+
+You may notice the colors will be VERY funky! This is not an accident. The tile
+definition contains a palette in it, which you may wish to edit to get a more
+accurate reflection of the colors used in your game. Because graphics are
+handled by their binary data, the palette is irrelevant to reinsertion, it's
+just something you can make pretty for your editing pleasure.
+
+Each color in the palette is stored as an RGB array. The first # is red, the
+second is green and the third is blue. You can change them to any value between
+0-255 (of 0x00-0xff) you like.
+
+After you have your palette the way you want, just redump the graphic.
+
+-------------------------------------------------------------------------------
+ vii. Scaling and padding
+-------------------------------------------------------------------------------
+Both monochrome and color bitmaps can be scaled by FEIDIAN with no problems.
+To scale a graphic, use this command line:
+
+  feidian -s *width,*height input.bmp output
+
+The width and height are how much you wish to multiply by. You can only do
+nearest neighbor scaling in increments of 100%, so a scale setting of 2,1 would
+scale the graphic to 200%x100%.
+
+Padding, likewise, can work on both monochrome and color graphics. You can pad
+by x,y pixels (width,height). These are pixels IN ADDITION to the current tile
+size, not a new tile size. The command line for padding is:
+
+    feidian -p tile_width,tile_height,pad_width,pad_height input.bmp output
+
+-------------------------------------------------------------------------------
+ viii. Building a dual-letter font
 -------------------------------------------------------------------------------
 How would this be useful? We're getting there, hold your horses.
 
 First off, we will need a font. A FONT YOU SAY?! Yes, but not just any font.
 It needs to be half the width of our desired tile size, 16 columns wide, and 16
 rows high. Yes, 256 tiles. And they need to correspond to the ASCII ordering.
-
-Aren't I demanding? Well, since I'm not a totally heartless bastard, I'm
-thinking of implementing a system to let you make a corresponding text map to
-a bitmap, so you only need ot include the letters you want. But that's down the
-development road.
 
 So we need to make a graphic that has 16 rows and 16 columns of 6x12 tiles on
 it. Rather, YOU need to. Get to work, Photoshop whore!
@@ -254,7 +307,27 @@ So, if you were doing a 16x16 font, you could follow the above example and
 include and 8x16 bitmap instead. I'm sure you're getting the idea.
 
 -------------------------------------------------------------------------------
- vii. Other Notes
+ ix. BCR (Binary Character Recognition)
+-------------------------------------------------------------------------------
+One of the most annoying parts of translation is having to make a table for
+the font to get a script dump. Rather than starting from scratch every time,
+character recognition can save a lot of time.
+
+OCR (Optical Character Recognition) is great, but often has problems with
+misreporting characters. BCR is another way to go.
+
+Using BCR, you can take a bitmap of one font and its table and use it to try
+to fill in the table for another font. It's handy for companies who use the
+default dev kit fonts, or who recycle fonts between games.
+
+In the case of identical font faces, you can get around 70~80% matched tiles
+regardless of ordering changes.
+
+The command line for binary character recognition is:
+  feidian -b tile_width,tile_height,source_bitmap,text_version input.bmp output
+
+-------------------------------------------------------------------------------
+ x. Other Notes
 -------------------------------------------------------------------------------
 So what else can FEIDIAN do? At the moment, a whole lot of  N O T H I N G ! ! !
 
@@ -271,7 +344,7 @@ lose JumpStation.org and $150 in pre-paid service.
  T H A N K   Y O U   F O R   R E A D I N G   A N D   S E E   Y O U   N E X T !
 
 -------------------------------------------------------------------------------
- viii. License
+ xi. License
 -------------------------------------------------------------------------------
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -289,5 +362,4 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 This archive is subject to license.txt. Read it, or die.
 --
-
 

@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -34,8 +34,13 @@
 function ocrtile($tile_height, $tile_width, $source_file, $text_rep, $in_file, $out_file) {
 	// Read the source to an array
 	print "Reading characters from $source_file to array...\n";
-	$bitmap = strrev(binaryread($source_file, filesize($source_file)-62, 62, $invert));
-	list($img_width, $img_height) = getbmpscale($source_file);
+	list($img_width, $img_height, $bpp) = getbmpinfo($source_file);
+	if($bpp==4) {
+		$bitmap = strrev(hexread($in_file, filesize($source_file)-0x76, 0x76));
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($source_file)-62, 62, 0));
+	}
 	$rows=$img_height/$tile_height;
 	$columns=$img_width/$tile_width;
 	$ptr=0; $bitplane = "";
@@ -78,8 +83,13 @@ function ocrtile($tile_height, $tile_width, $source_file, $text_rep, $in_file, $
 	
 	// Read the target to an array
 	print "Reading characters from $in_file to array...\n";
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
-	list($img_width, $img_height) = getbmpscale($in_file);
+	list($img_width, $img_height, $bpp) = getbmpinfo($in_file);
+	if($bpp==4) {
+		$bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	}
 	$rows=$img_height/$tile_height;
 	$columns=$img_width/$tile_width;
 	$ptr=0; $bitplane = "";

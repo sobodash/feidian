@@ -1,11 +1,11 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
-
+    
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -31,8 +31,12 @@
 //-----------------------------------------------------------------------------
 function makefd($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $out_file){
 	$rows=16; $columns=16;
-
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	if($bpp==4) {
+		die(print "ERROR: The selected bitmap is not monochrome!");
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	}
 
 	$ptr=0; $bitplane = "";
 	print "  Converting bitmap to bitplane...\n";
@@ -77,8 +81,12 @@ function makefd($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $
 //-----------------------------------------------------------------------------
 function makebdf($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $out_file){
 	$rows=16; $columns=16;
-
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+	if($bpp==4) {
+		die(print "ERROR: The selected bitmap is not monochrome!");
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+	}
 
 	$ptr=0; $bitplane = "";
 	print "  Converting bitmap to bitplane...\n";

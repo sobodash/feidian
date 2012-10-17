@@ -2,27 +2,33 @@ FEIDIAN Command List:
 
 [ -r  ]
 function : Rips bitplane data to a bitmap
+formats  : Monochrome only
 arguments: tile_width,tile_height,columns,rows,offset [source] [bitmap]
 
 [ -cr ]
 function : Rips bitplane data to a bitmap using a tile definition
+formats  : Monochrome or Color
 arguments: tile_definition_name,columns,rows,offset [source] [bitmap]
 
 [ -i  ]
 function : Injects a bitmap back to bitplane data
+formats  : Monochrome only
 arguments: tile_width,tile_height,columns,rows,offset [bitmap] [target]
 
 [ -ci ]
 function : Injects a bitmap back to bitplane data using a tile definition
+formats  : Monochrome or Color
 arguments: tile_width,tile_height,columns,rows,offset [source] [bitmap]
 
 [ -d  ]
 function : Builds a set of full width tiles using a half width font and a
            text file of two-letter combos
+formats  : Monochrome or Color
 arguments: tile_width,tile_height,text_file [font_bitmap] [output]
 
 [ -wf ]
 function : Build a text font descriptor from an ASCII ordered bitmap
+formats  : Monochrome only
 arguments: tile_width,tile_height,format,vwf,spacing,descent [font_bitmap]
            [output]
 formats  : Valid formats are "bdf" or "fd"
@@ -31,6 +37,7 @@ formats  : Valid formats are "bdf" or "fd"
 function : Performs a nearest neighbor scale on an image in increments of
            100%. A scale of 2,2 would make an images 200% larger. 2,1 would
            perform a 200% width stretch and keep the height the same.
+formats  : Monochrome or Color
 arguments: scale_width,scale_height [input_bitmap] [output]
 
 [ -p  ]
@@ -38,12 +45,14 @@ function : Pads a tile to a higher size. It does not increase the size of the
            tile's contents, only the size of the tile. This has any number of
            uses, though would be most beneficial to someone using an OCR to
            scan a Japanese font (where 8-10px spacing is needed).
+formats  : Monochrome or Color
 arguments: tile_width,tile_height,pad_width,pad_height [input_bitmap] [output]
 
 [ -b  ]
 function : Binary character recognition. It will use a font and its matching
            text representation to match characters in another font set. The
            characters matched are garuanteed 100% accuracy.
+formats  : Monochrome or Color
 arguments: tile_width,tile_height,source_bmp,text_representation [input_bitmap]
            [output_text]
 

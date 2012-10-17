@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.6
+    Copyright (C) 2003, 2004 Derrick Sobodash
+    Version: 0.8a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -27,8 +27,13 @@
 //-----------------------------------------------------------------------------
 
 function scale($height, $width, $in_file, $out_file, $invert) {
-	list($img_width, $img_height) = getbmpscale($in_file);
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+	list($img_width, $img_height, $bpp) = getbmpinfo($in_file);
+	if($bpp==4) {
+		$bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+	}
+	else {
+		$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+	}
 	
 	// Break the image rows into arrays. It's slow but easier.
 	for($i=0; $i<$img_height; $i++)
@@ -59,12 +64,27 @@ function scale($height, $width, $in_file, $out_file, $invert) {
 	$bitmap2 = "";
 	$bitmap = strrev($bitmap);
 	// Transform back from bit string to data
-	for($i=0; $i<strlen($bitmap)/8; $i++)
-		$bitmap2 .= chr(bindec(substr($bitmap, $i*8, 8)));
+	if($bpp==4) {
+		for($i=0; $i<strlen($bitmap)/2; $i++)
+			$bitmap2 .= chr(hexdec(substr($bitmap, $i*2, 2)));
+	}
+	else {
+		for($i=0; $i<strlen($bitmap)/8; $i++)
+			$bitmap2 .= chr(bindec(substr($bitmap, $i*8, 8)));
+	}	
 	$bitmap = strrev($bitmap2);
 	
 	$fo = fopen($out_file . "_scaled.BMP", "wb");
-	fputs($fo, bitmapheader(strlen($bitmap), $img_width*$width, $img_height*$height) . strrev($bitmap));
+	if($bpp==4) {
+		$fd=fopen($in_file, "rb");
+		fseek($fd, 0x36, SEEK_SET);
+		$palette=fread($fd, 64);
+		fclose($fd);
+		fputs($fo, bitmapheader_xbpp(strlen($bitmap), $img_width*$width, $img_height*$height, $palette) . strrev($bitmap));
+	}
+	else {
+		fputs($fo, bitmapheader_1bpp(strlen($bitmap), $img_width*$width, $img_height*$height) . strrev($bitmap));
+	}
 	fclose($fo);
 	print $out_file . "_scaled.BMP was written!\n\n";
 }
