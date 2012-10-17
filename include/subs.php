@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003 Derrick Sobodash
-    Version: 0.3
+    Copyright (C) 2003,2004 Derrick Sobodash
+    Version: 0.4
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -20,7 +20,6 @@
     along with this program (license.txt); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 //-----------------------------------------------------------------------------
 // FEIDIAN Subs Module
 //-----------------------------------------------------------------------------
@@ -28,7 +27,7 @@
 // rather not have to write 90x.
 //-----------------------------------------------------------------------------
 
-function binaryread($filename, $length, $offset) {
+function binaryread($filename, $length, $offset, $invert) {
 	$fd = fopen($filename, "rb");
 	fseek($fd, $offset, SEEK_SET);
 	$fddump = fread($fd, $length);
@@ -37,6 +36,15 @@ function binaryread($filename, $length, $offset) {
 	// left with zeros when needed
 	for($i=0; $i<strlen($fddump); $i++) {
 		$binarydump .= str_pad(decbin(hexdec(bin2hex(substr($fddump, $i, 1)))), 8, "0", STR_PAD_LEFT);
+	}
+	if ($invert==1) {
+		$invertmap = "";
+		for ($lala=0; $lala<strlen($binarydump); $lala++) {
+			if ($binarydump[$lala]==0) $invertmap.=1;
+			else if ($binarydump[$lala]==1) $invertmap.=0;
+			else die("What'chu talkin' bout Willis?\n");
+		}
+		$binarydump = $invertmap;
 	}
 	return($binarydump);
 }

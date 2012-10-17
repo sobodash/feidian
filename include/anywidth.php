@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003 Derrick Sobodash
-    Version: 0.3
+    Copyright (C) 2003,2004 Derrick Sobodash
+    Version: 0.4
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -20,7 +20,6 @@
     along with this program (license.txt); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 //-----------------------------------------------------------------------------
 // FEIDIAN Any Width Tile Module
 //-----------------------------------------------------------------------------
@@ -35,12 +34,12 @@
 //-----------------------------------------------------------------------------
 // bit2bmp - converts bitplane tile data to bitmap
 //-----------------------------------------------------------------------------
-function bit2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file) {
+function bit2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file, $invert) {
 	// Create a file suffix specifying font width/height
 	$prefix = $tile_width . "x" . $tile_height;
 	print "Dumping $prefix from $in_file...\n";
 	
-	$binarydump = binaryread($in_file, ($tile_height*$tile_width*$rows*$columns)/8, $seekstart);
+	$binarydump = binaryread($in_file, ($tile_height*$tile_width*$rows*$columns)/8, $seekstart, $invert);	
 	
 	$bitmap = "";
 	print "  Converting to bitmap...\n";
@@ -76,12 +75,12 @@ function bit2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_fil
 //-----------------------------------------------------------------------------
 // bit2tile - converts bitmap to bitplane tile data
 //-----------------------------------------------------------------------------
-function bit2tile($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file) {
+function bit2tile($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file, $invert) {
 	// Create a file suffix specifying font width/height
 	$prefix = $tile_width . "x" . $tile_height;
 	print "Injecting $prefix into $out_file...\n";
 
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62));
+	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
 
 	$ptr=0; $bitplane = "";
 	print "  Converting bitmap to bitplane...\n";

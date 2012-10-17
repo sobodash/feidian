@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003 Derrick Sobodash
-    Version: 0.3
+    Copyright (C) 2003,2004 Derrick Sobodash
+    Version: 0.4
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -20,7 +20,6 @@
     along with this program (license.txt); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 //-----------------------------------------------------------------------------
 // FEIDIAN Dual-Tile Module
 //-----------------------------------------------------------------------------

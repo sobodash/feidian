@@ -1,8 +1,8 @@
 <?php
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003 Derrick Sobodash
-    Version: 0.3
+    Copyright (C) 2003,2004 Derrick Sobodash
+    Version: 0.4
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -20,7 +20,6 @@
     along with this program (license.txt); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 //-----------------------------------------------------------------------------
 // FEIDIAN Custom Tile Module
 //-----------------------------------------------------------------------------
@@ -36,7 +35,7 @@
 //-----------------------------------------------------------------------------
 // cust2bmp - converts a custom bitplane tile definition to bitmap
 //-----------------------------------------------------------------------------
-function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file){
+function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $invert){
 	// Include the user defined tile where we will get the replacement
 	// patter, tile width, height, and byte count
 	include("tiles/" . $tiledef . ".php");
@@ -68,9 +67,12 @@ function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file){
 				// accordingly in our pattern string.
 				for ($g=0; $g<strlen($lenbyte); $g++) {
 					$binstring = str_pad(decbin(hexdec(bin2hex($lenbyte[$g]))), 8, "0", STR_PAD_LEFT);
+					if($g<26) $offvar = 0x41;
+					else if($g<52) $offvar = 0x61 - 26;
+					else if($g<62) $offvar = 0x30 - 52;
 					$lele = 0;
-					while(strpos($temp_pattern, chr(0x41+$g)) !== FALSE) {
-						$temp_pattern[strpos($temp_pattern, chr(0x41+$g))] = $binstring[$lele];
+					while(strpos($temp_pattern, chr($offvar+$g)) !== FALSE) {
+						$temp_pattern[strpos($temp_pattern, chr($offvar+$g))] = $binstring[$lele];
 						$lele++;
 					}
 				}
@@ -91,6 +93,16 @@ function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file){
 	$bitmap2 = "";
 	$bitmap = strrev($bitmap);
 	
+	if ($invert==1) {
+		$invertmap = "";
+		for ($lala=0; $lala<strlen($bitmap); $lala++) {
+			if ($bitmap[$lala]==0) $invertmap.=1;
+			else if ($bitmap[$lala]==1) $invertmap.=0;
+			else die("What'chu talkin' bout Willis?\n");
+		}
+		$bitmap = $invertmap;
+	}
+	
 	// Transform the string from bits to bytes using the chr() command
 	// (Note: It's faster than pack() in this case)
 	for($i=0; $i<strlen($bitmap)/8; $i++)
@@ -103,7 +115,7 @@ function cust2bmp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file){
 	print $out_file . "_$prefix.BMP was written!\n\n";
 }
 
-function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file) {
+function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $invert) {
 	// Include the user defined tile where we will get the replacement
 	// patter, tile width, height, and byte count
 	include("tiles/" . $tiledef . ".php");
@@ -119,7 +131,7 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file) {
 	$prefix = $tile_width . "x" . $tile_height;
 	print "Injecting $prefix into $out_file...\n";
 
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62));
+	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
 
 	$ptr=0; $bitplane="";
 	print "  Converting bitmap to bitplane...\n";

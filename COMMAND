@@ -21,3 +21,11 @@ function : Builds a set of full width tiles using a half width font and a
            text file of two-letter combos
 arguments: tile_width,tile_height,text_file [font_bitmap] [output]
 
+[Inversion Flag]
+function : Inverts the black and white in a monochrome image dump. Useful
+           for games which store 1=transparent and 0=color.
+arguments: Inversion is not a function on its own, it is a flag to be used
+           with -r/-i/-cr/-ci.
+           [arguments] i [command string] [font_bitmap] [output]
+           (example: -cr i mrsaturn,16,6,0x0x2015b9 earthbound.smc mrsaturn)
+

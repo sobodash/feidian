@@ -1,0 +1,29 @@
+FEIDIAN CHANGE LOG
+
+- v0.4 -
+
+* Expanded tile definitions to 62 bytes. This should cover most any 24x24 tile
+  (assuming not EVERY byte needs to be defined, just the pattern). The new
+  letter hirearchy is A-Z a-z 0-9. 0-9 was put last instead of first to ensure
+  backwards compatability with older definitions.
+* Added support for color inversion in the dumps. Inversion is supported in all
+  insertion and ripping functions (you have no need for it in dual-tile
+  building, even if you think you do). To invert, simply add an "i" to the
+  command line.
+    Example: feidian.php -cr i mrsaturn,16,6,0x2015b9 eb.smc mrsaturn
+  The Mr. Saturn font is stored in Earthbound with its colors reversed. This
+  will dump it in the standard 0=transparent 1=color format most games use.
+  You could similarly add an "i" to the command line in insertion to flip the
+  colors back.
+
+- v0.3 -
+
+* Complete rewrite of the source code.
+* Added support for creating dual-tile sets.
+* Added support for custom tile definitions.
+* Added support for non-8* width fonts.
+
+- v0.2 L31 -
+
+* Initial release
+
