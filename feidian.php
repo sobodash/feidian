@@ -3,7 +3,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.86
+    Version: 0.89
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -29,7 +29,7 @@ include("settings.php");
 echo ("
  ,---------------------------------------------------------------------------.
  |   FEIDIAN: The Freaking Easy, Indispensible, Dot-Image formAt coNverter   |
- |   Version 0.86                          (C) 2003, 2004 Derrick Sobodash   |
+ |   Version 0.89                          (C) 2003, 2004 Derrick Sobodash   |
  `---------------------------------------------------------------------------'
 ");
 set_time_limit(6000000);
@@ -79,6 +79,10 @@ elseif ($mode == "-i") {
   }
 }
 elseif ($mode == "-cr") {
+  if($argc > 5) {
+    if($argv[2] != "i") $tlp_pal = $argv[5];
+    else $tlp_pal = $argv[6];
+  }
   list($tiledef, $columns, $rows, $start) = split(",", $command);
   // Make sure the command string isn't missing anything
   if($tiledef==''||$columns==''||$rows==''||$start=='') die(print "ERROR: Your command string is incomplete!\n");
@@ -88,9 +92,13 @@ elseif ($mode == "-cr") {
   // Make sure the input file exists
   if(!file_exists($in_file)) die(print "ERROR: $in_file does not exist!\n");
   if(!file_exists($out_file)) print "$out_file does not exist. It will be created.\n";
+  if($tlp_pal) {
+    if(!file_exists($tlp_pal)) die(print "ERROR: The palette you specified doesn't exist!\n");
+  }
+  else $tlp_pal = 0;
   include("include/customrip.php");
-  if ($invert==1) cust2bmp($rows, $columns, $tiledef, $start, $in_file, $out_file, 1);
-  else cust2bmp($rows, $columns, $tiledef, $start, $in_file, $out_file, 0);
+  if ($invert==1) cust2bmp($rows, $columns, $tiledef, $start, $in_file, $out_file, 1, $tlp_pal);
+  else cust2bmp($rows, $columns, $tiledef, $start, $in_file, $out_file, 0, $tlp_pal);
 }
 elseif ($mode == "-ci") {
   list($tiledef, $columns, $rows, $start) = split(",", $command);

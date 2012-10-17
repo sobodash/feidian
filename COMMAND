@@ -64,3 +64,11 @@ arguments: Inversion is not a function on its own, it is a flag to be used
            [arguments] i [command string] [font_bitmap] [output]
            (example: -cr i mrsaturn,16,6,0x0x2015b9 earthbound.smc mrsaturn)
 
+[Tile Layer Pro Palette]
+function : Allows users to use the colors from a Tile Layer Pro generated
+           palette instead of the default colors in a tile definition.
+arguments: It is not a function on its own. It is just something you can add
+           to the -cr operation. It only works with color definitions.
+           tile_definition_name,columns,rows,offset [source] [bitmap] [palette]
+           (example: -cr i snes8,2,3,0x0xd0200 ff2.smc cecil cecil.tpl)
+           

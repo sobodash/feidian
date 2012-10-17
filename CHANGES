@@ -1,5 +1,13 @@
 FEIDIAN CHANGE LOG
 
+- v0.89 -
+* Added support for Tile Layer Pro color palettes. This should make it easier
+  to get the colors you want in FEIDIAN output. In Tile Layer Pro, you can
+  drag around the sliders to change colors. When you get all the colors how
+  you want, this can be saved to a .TPL. You can include these .TPL files in
+  FEIDIAN by adding them AFTER the output file in -cr ripping. It is only
+  supported in -cr since -cr is the only non-monochrome ripping function.
+
 - v0.86 -
 * If you need to interleave every pixel (like GBA does), just add
   "$interleave=1;" to your tile definition. This would transform 01234567 into

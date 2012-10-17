@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.86
+    Version: 0.89
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -86,7 +86,7 @@ function makefd($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $
 //-----------------------------------------------------------------------------
 function makebdf($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $out_file){
   $rows=16; $columns=16;
-  if(GRAPHIC_FORMAT=="xpm") {
+  if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
   elseif(GRAPHIC_FORMAT=="bmp") {
     if($bpp==4) {
