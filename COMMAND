@@ -25,12 +25,27 @@ arguments: tile_width,tile_height,text_file [font_bitmap] [output]
 function : Build a text font descriptor from an ASCII ordered bitmap
 arguments: tile_width,tile_height,format,vwf,spacing,descent [font_bitmap]
            [output]
+formats  : Valid formats are "bdf" or "fd"
 
 [ -s  ]
 function : Performs a nearest neighbor scale on an image in increments of
            100%. A scale of 2,2 would make an images 200% larger. 2,1 would
            perform a 200% width stretch and keep the height the same.
 arguments: scale_width,scale_height [input_bitmap] [output]
+
+[ -p  ]
+function : Pads a tile to a higher size. It does not increase the size of the
+           tile's contents, only the size of the tile. This has any number of
+           uses, though would be most beneficial to someone using an OCR to
+           scan a Japanese font (where 8-10px spacing is needed).
+arguments: tile_width,tile_height,pad_width,pad_height [input_bitmap] [output]
+
+[ -b  ]
+function : Binary character recognition. It will use a font and its matching
+           text representation to match characters in another font set. The
+           characters matched are garuanteed 100% accuracy.
+arguments: tile_width,tile_height,source_bmp,text_representation [input_bitmap]
+           [output_text]
 
 [Inversion Flag]
 function : Inverts the black and white in a monochrome image dump. Useful

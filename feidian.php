@@ -3,7 +3,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.5
+    Version: 0.6
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -24,7 +24,7 @@
 
 include("include/subs.php");
 
-echo ("\nFEIDIAN\nV0.5 Copyright (C) 2003, 2004 Derrick Sobodash\n");
+echo ("\nFEIDIAN\nV0.6 Copyright (C) 2003, 2004 Derrick Sobodash\n");
 set_time_limit(6000000);
 
 if ($argc < 5) { DisplayOptions(); die; }
@@ -152,10 +152,26 @@ elseif ($mode == "-wf") {
 	if($format!='fd'&&$format!='bdf') die(print "ERROR: You must specify FD or BDF format!\n");
 	if($vwf=='v'||$vwf=='f') die(print "ERROR: You must specify (v)ariable or (f)ixed width!\n");
 	if(!is_numeric($spacing)) die(print "ERROR: You must specify a spacing value!\n");
-	if(!is_numeric($spacing)) die(print "ERROR: You must specify a descent value!\n");
+	if(!is_numeric($descent)) die(print "ERROR: You must specify a descent value!\n");
 	include("include/fontfile.php");
 	if ($format=='bdf') makebdf($width, $height, $vwf, $spacing, $descent, $in_file, $out_file);
 	else makefd($width, $height, $vwf, $spacing, $descent, $in_file, $out_file);
+}
+elseif ($mode == "-p") {
+	list($width, $height, $pad_width, $pad_height) = split(",", $command);
+	// Test all input, yeah, I'm too lazy to add a comment for everything now :P
+	if ($width==''||$height==''||$pad_width==''||$pad_height=='') die(print "ERROR: Your command string is incomplete!\n");
+	if(!is_numeric($width)||!is_numeric($height)||!is_numeric($pad_width)||!is_numeric($pad_height)) die(print "ERROR: Your width or height is a non-integer value!\n");
+	include("include/pad.php");
+	padtile($width, $height, $pad_width, $pad_height, $in_file, $out_file);
+}
+elseif ($mode == "-b") {
+	list($width, $height, $source_file, $text_rep) = split(",", $command);
+	// Test all input, yeah, I'm too lazy to add a comment for everything now :P
+	if ($width==''||$height==''||$source_file==''||$text_rep=='') die(print "ERROR: Your command string is incomplete!\n");
+	if(!is_numeric($width)||!is_numeric($height)||!file_exists($source_file)||!file_exists($text_rep)) die(print "ERROR: Your width or height is a non-integer value!\n");
+	include("include/bcr.php");
+	ocrtile($width, $height, $source_file, $text_rep, $in_file, $out_file);
 }
 else die(print "ERROR: You did not specify a valid mode!\n");
 

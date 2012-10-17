@@ -1,5 +1,20 @@
 FEIDIAN CHANGE LOG
 
+- v0.6 -
+* Tile padding has been added. You can now increase a tile's size by any x,y
+  pixels without scaling the tile contents. 0 is assumed as the transparent
+  bit (if this is really a problem, just invert your bitmap colors first).
+  This function has many uses, noteably preparation of a font for Optical
+  Character Recognition (OCR), where an 8-10px spacing is needed for good
+  results.
+* Binary Character Recognition (BCR) added (invented?). This method allows a
+  user to supply a known game font and text representation of it as a source.
+  This can vastly reduce the amount of characters one needs to fill in for a
+  table, if you have a similar font already done. This can be very useful since
+  companies often recycle their fonts between games.
+* BDF font output APPEARS to be working, but I don't have a setup available
+  to test BDF fonts on. If you use it, and it works, let me know.
+
 - v0.5 -
 * FD font output support has been added. FD fonts can be compiled into
   Windows 3.0/3.11/NT/95/98/Me/2000/XP compatable .FON files using the
@@ -24,7 +39,6 @@ FEIDIAN CHANGE LOG
   in the insertion routine for custom tiles using the new 62-byte format.
 
 - v0.4 -
-
 * Expanded tile definitions to 62 bytes. This should cover most any 24x24 tile
   (assuming not EVERY byte needs to be defined, just the pattern). The new
   letter hirearchy is A-Z a-z 0-9. 0-9 was put last instead of first to ensure
@@ -40,13 +54,11 @@ FEIDIAN CHANGE LOG
   colors back.
 
 - v0.3 -
-
 * Complete rewrite of the source code.
 * Added support for creating dual-tile sets.
 * Added support for custom tile definitions.
 * Added support for non-8* width fonts.
 
 - v0.2 L31 -
-
 * Initial release
 

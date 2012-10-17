@@ -21,28 +21,66 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 //-----------------------------------------------------------------------------
-// FEIDIAN Any Width Tile Module
+// FEIDIAN Padding Module
 //-----------------------------------------------------------------------------
-// This module is used for dumping tiles in normal byte ordering but using
-// odd line widths, like 7x8, 14x18, 12x12, etc.
-//
-// It is a little bit slower than the (8*) width routine, that is why we
-// use these separate functions to handle dumping. No need to make everything
-// lag, right?
+// This is used to pad extra cols and rows onto tiles in a set without
+// increasing the actual character size. Useful for toys like OCRs. :)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// bit2bmp - converts bitplane tile data to bitmap
+// padtile - pads a tile by cols,rows
 //-----------------------------------------------------------------------------
-function bit2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file, $invert) {
+function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $out_file) {
+	list($img_width, $img_height) = getbmpscale($in_file);
+	$rows=$img_height/$tile_height;
+	$columns=$img_width/$tile_width;
 	// Create a file suffix specifying font width/height
 	$prefix = $tile_width . "x" . $tile_height;
-	print "Dumping $prefix from $in_file...\n";
-	
-	$binarydump = binaryread($in_file, ($tile_height*$tile_width*$rows*$columns)/8, $seekstart, $invert);	
-	
+	print "Converting to bitplane...\n";
+
+	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+
+	$ptr=0; $bitplane = "";
+	for ($k=0; $k<$rows; $k++) {
+		for ($i=0; $i<$tile_height; $i++) {
+			for ($z=0; $z<$columns; $z++) {
+				$tile[$z][$i] = substr($bitmap, $ptr, $tile_width);
+				$ptr += $tile_width;
+			}
+		}
+		for ($z=$columns-1; $z>-1; $z--) {
+			for ($i=0; $i<$tile_height; $i++) {
+				$bitplane .= strrev($tile[$z][$i]);
+			}
+		}
+		unset($tile);
+	}
+	print ($rows*$columns) . " tiles read!\nPadding tiles...\n";
+	print "  Padding by +" . $pad_width . "x" . $pad_height . " per tile...\n";
+	$bit_rows=array(); $z=0;
+	for($i=0; $i<strlen($bitplane); $i=$i+$tile_height){
+		$bit_rows[$z]=substr($bitplane, $i, $tile_height);
+		$z++;
+	}
+	$binarydump="";
+	for($i=0; $i<count($bit_rows); $i++)
+		//print "row $i\n";
+		for($k=0; $k<$pad_width; $k++)
+			$bit_rows[$i].="0";
+	for($i=0; $i<count($bit_rows); $i++){
+		if((($i+1)%$tile_height)==0){
+			$binarydump.=$bit_rows[$i];
+			for($z=0; $z<$pad_height; $z++)
+				for($k=0; $k<($tile_width+$pad_width); $k++)
+					$binarydump.="0";
+		}
+		else
+			$binarydump.=$bit_rows[$i];
+	}
 	$bitmap = "";
-	print "  Converting to bitmap...\n";
+	print "Converting back to bitmap...\n";
+	$tile_width=$tile_width+$pad_width;
+	$tile_height=$tile_height+$pad_height;
 	$pointer=0;
 	for ($k=0; $k<$rows; $k++) {
 		for ($i=0; $i<$columns; $i++) {
@@ -70,46 +108,7 @@ function bit2bmp($rows, $columns, $tile_height, $tile_width, $seekstart, $in_fil
 	fputs($fo, bitmapheader(strlen($bitmap), $tile_width*$columns, $rows*$tile_height) . strrev($bitmap));
 	fclose($fo);
 	print $out_file . "_$prefix.BMP was written!\n\n";
-}
-
-//-----------------------------------------------------------------------------
-// bit2tile - converts bitmap to bitplane tile data
-//-----------------------------------------------------------------------------
-function bit2tile($rows, $columns, $tile_height, $tile_width, $seekstart, $in_file, $out_file, $invert) {
-	// Create a file suffix specifying font width/height
-	$prefix = $tile_width . "x" . $tile_height;
-	print "Injecting $prefix into $out_file...\n";
-
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
-
-	$ptr=0; $bitplane = "";
-	print "  Converting bitmap to bitplane...\n";
-	for ($k=0; $k<$rows; $k++) {
-		for ($i=0; $i<$tile_height; $i++) {
-			for ($z=0; $z<$columns; $z++) {
-				$tile[$z][$i] = substr($bitmap, $ptr, $tile_width);
-				$ptr += $tile_width;
-			}
-		}
-		for ($z=$columns-1; $z>-1; $z--) {
-			for ($i=0; $i<$tile_height; $i++) {
-				$bitplane .= strrev($tile[$z][$i]);
-			}
-		}
-		unset($tile);
-	}
-	$output = "";
-	// Make sure the binary string is a multiple of 8
-	while(strlen($bitplane)%8!=0)
-		$bitplane .= "0";
-	// Transform back from binary string to data
-	for($i=0; $i<strlen($bitplane)/8; $i++)
-		$output .= chr(bindec(substr($bitplane, $i*8, 8)));
 	
-	print "  Injecting new bitplane data...\n";
-	injectfile($out_file, $seekstart, $output);
-	
-	print "$out_file was updated!\n\n";
-}
 
+}
 ?>
