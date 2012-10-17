@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.89
+    Version: 0.90a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -55,10 +55,6 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
   }
   if(COLOR_DEPTH=="2"){
     include("settings.php");
-    if(FORCE_PROPER_WIDTH==TRUE){
-      if(($columns*$tile_width)%8!=0)
-        die(print "NOTICE: Based on your tile width and columns, there is a chance your dumping\n        may error! Consider dumping with a multiple of 8 columns. To disable\n        this check, edit settings.php.\n\n        FEIDIAN will now terminate.\n");
-    }
     // Nuke all the user's whitespaces from the pattern
     $plane1 = preg_replace("/( *)/", "", $plane1);
     $plane1 = preg_replace("/(\\r*)/", "", $plane1);
@@ -72,8 +68,24 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
 
     if(GRAPHIC_FORMAT=="xpm")
       $bitmap = xpm2bitstring($in_file, 0);
-    elseif(GRAPHIC_FORMAT=="bmp")
+    elseif(GRAPHIC_FORMAT=="bmp") {
       $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($columns*$tile_width)%32 >0) {
+        $tempmap = "";
+        $true_row = $tile_width*$columns;
+        while($true_row%32 > 0)
+          $true_row++;
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$true_row), ($true_row));
+          $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
+    }
     else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
   
     $ptr=0; $bitplane="";
@@ -147,10 +159,6 @@ function bmp2cust2bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
   // patter, tile width, height, and byte count
   include("tiles/$tiledef.php");
   include("settings.php");
-  if(FORCE_PROPER_WIDTH==TRUE){
-    if(($columns*$tile_width)%8!=0)
-      die(print "NOTICE: Based on your tile width and columns, there is a chance your dumping\n        may error! Consider dumping with a multiple of 8 columns. To disable\n        this check, edit settings.php.\n\n        FEIDIAN will now terminate.\n");
-  }
   
   // Nuke all the user's whitespaces from the pattern
   $plane1 = preg_replace("/( *)/", "", $plane1);
@@ -171,8 +179,24 @@ function bmp2cust2bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
 
   if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
-  elseif(GRAPHIC_FORMAT=="bmp")
-    $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76, $invert));
+  elseif(GRAPHIC_FORMAT=="bmp") {
+    $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+    // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+    // This is a fix to chop off the padding added to a tile to force
+    // compliance with the bitmap format.
+    if(($columns*$tile_width)%8 >0) {
+      $tempmap = "";
+      $true_row = $tile_width*$columns;
+      while($true_row%8 > 0)
+        $true_row++;
+      for($i=0; $i<($tile_height*$rows); $i++) {
+        $temp = substr($bitmap, ($i*$true_row), ($true_row));
+        $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+        $tempmap .= $temp;
+      }
+      $bitmap = $tempmap;
+    }
+  }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
   
   $ptr=0; $bitplane="";
@@ -269,10 +293,6 @@ function bmp2cust3bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
   // patter, tile width, height, and byte count
   include("tiles/$tiledef.php");
   include("settings.php");
-  if(FORCE_PROPER_WIDTH==TRUE){
-    if(($columns*$tile_width)%8!=0)
-      die(print "NOTICE: Based on your tile width and columns, there is a chance your dumping\n        may error! Consider dumping with a multiple of 8 columns. To disable\n        this check, edit settings.php.\n\n        FEIDIAN will now terminate.\n");
-  }
   
   // Nuke all the user's whitespaces from the pattern
   $plane1 = preg_replace("/( *)/", "", $plane1);
@@ -296,8 +316,24 @@ function bmp2cust3bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
 
   if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
-  elseif(GRAPHIC_FORMAT=="bmp")
+  elseif(GRAPHIC_FORMAT=="bmp") {
     $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76, $invert));
+    // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+    // This is a fix to chop off the padding added to a tile to force
+    // compliance with the bitmap format.
+    if(($columns*$tile_width)%8 >0) {
+      $tempmap = "";
+      $true_row = $tile_width*$columns;
+      while($true_row%8 > 0)
+        $true_row++;
+      for($i=0; $i<($tile_height*$rows); $i++) {
+        $temp = substr($bitmap, ($i*$true_row), ($true_row));
+        $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+        $tempmap .= $temp;
+      }
+      $bitmap = $tempmap;
+    }
+  }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
   
   $ptr=0; $bitplane="";
@@ -404,10 +440,6 @@ function bmp2cust4bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
   // patter, tile width, height, and byte count
   include("tiles/$tiledef.php");
   include("settings.php");
-  if(FORCE_PROPER_WIDTH==TRUE){
-    if(($columns*$tile_width)%8!=0)
-      die(print "NOTICE: Based on your tile width and columns, there is a chance your dumping\n        may error! Consider dumping with a multiple of 8 columns. To disable\n        this check, edit settings.php.\n\n        FEIDIAN will now terminate.\n");
-  }
   
   // Nuke all the user's whitespaces from the pattern
   $plane1 = preg_replace("/( *)/", "", $plane1);
@@ -434,8 +466,24 @@ function bmp2cust4bpp($rows, $columns, $tiledef, $seekstart, $in_file, $out_file
 
   if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
-  elseif(GRAPHIC_FORMAT=="bmp")
+  elseif(GRAPHIC_FORMAT=="bmp") {
     $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76, $invert));
+    // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+    // This is a fix to chop off the padding added to a tile to force
+    // compliance with the bitmap format.
+    if(($columns*$tile_width)%8 >0) {
+      $tempmap = "";
+      $true_row = $tile_width*$columns;
+      while($true_row%8 > 0)
+        $true_row++;
+      for($i=0; $i<($tile_height*$rows); $i++) {
+        $temp = substr($bitmap, ($i*$true_row), ($true_row));
+        $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+        $tempmap .= $temp;
+      }
+      $bitmap = $tempmap;
+    }
+  }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
   
   $ptr=0; $bitplane="";

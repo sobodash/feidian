@@ -4,7 +4,7 @@ FEIDIAN requires PHP in order to function. You can download PHP for free from
 http://www.php.net/. Download the zip of Windows Binaries and extract it to
 C:\PHP\. I am not including instructions for installing PHP on FreeBSD/Linux
 because if you use either of those OS'es, you better damn well know how
-already, or at least be able to figure out out.
+already, or at least be able to figure it out.
 
 Once the zip is extracted, open up the folder. Copy php.ini-dist to C:\Windows
 and rename it to php.ini. Then open the \dlls\ folder, select all the files and

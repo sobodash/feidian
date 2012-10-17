@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.89
+    Version: 0.90a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -34,11 +34,27 @@ function makefd($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, $
   if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
   elseif(GRAPHIC_FORMAT=="bmp") {
+    list($img_width, $img_height, $bpp) = getbmpinfo($in_file);
     if($bpp==4) {
-      $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+      die(print "ERROR: Fonts can only be made from monochrome images!\n");
     }
     else {
       $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($columns*$tile_width)%32 >0) {
+        $tempmap = "";
+        $true_row = $tile_width*$columns;
+        while($true_row%32 > 0)
+          $true_row++;
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$true_row), ($true_row));
+          $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
     }
   }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
@@ -89,11 +105,27 @@ function makebdf($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, 
   if(GRAPHIC_FORMAT=="xpm")
     $bitmap = xpm2bitstring($in_file, 0);
   elseif(GRAPHIC_FORMAT=="bmp") {
+    list($img_width, $img_height, $bpp) = getbmpinfo($in_file);
     if($bpp==4) {
-      $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+      die(print "ERROR: Fonts can only be made from monochrome images!\n");
     }
     else {
       $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($columns*$tile_width)%32 >0) {
+        $tempmap = "";
+        $true_row = $tile_width*$columns;
+        while($true_row%32 > 0)
+          $true_row++;
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$true_row), ($true_row));
+          $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
     }
   }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");

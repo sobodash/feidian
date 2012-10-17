@@ -1,5 +1,22 @@
 FEIDIAN CHANGE LOG
 
+- 0.90a -
+* And after more errors, it turns out to be DWORD. UGH!
+* Fixed an error in fontfile.php that allowed color images to be used (this
+  will ALWAYS result in broken output).
+* Fixed an error in bcr.php that was causing color images to read as
+  monochrome, which made BCR completely break.
+
+- 0.90 -
+* FINALLY fixed the bitmap glitch. Previously MadMalkav and I thought it was
+  a image width issue, hence the option in settings ot force valid width. This
+  turned out to be incorrect. The bitmap specification I was working on failed
+  to mention all image data has to be stored in WORDs, not BYTEs. All files
+  have been updated for this fix. FEIDIAN should finally work with all possible
+  widths in Bitmap and XPM formats.
+* Fixed numerous spelling errors in this change log that have accumulated the
+  last 8 months.
+
 - v0.89 -
 * Added support for Tile Layer Pro color palettes. This should make it easier
   to get the colors you want in FEIDIAN output. In Tile Layer Pro, you can
@@ -19,11 +36,11 @@ FEIDIAN CHANGE LOG
 * Changed the copyright tag
 
 - v0.85a -
-* Fixed a glitch with tile padding whicha ppears to have been present for
+* Fixed a glitch with tile padding which appears to have been present for
   several versions. Padding by an odd integer width will break. The reason is
   yet unknown (it SHOULD be making valid bitmap widths and appears to expand
   the tiles properly...). For now, FEIDIAN just blocks you from using odd
-  integers. There were also some other fixes and speed-ups ot the pad code.
+  integers. There were also some other fixes and speed-ups to the pad code.
 * Not directly included, but there's now a tile definition for
   Game Boy Advance on the website made thanks to some information on the
   format provided by Kojiro Sasaki.
@@ -74,13 +91,13 @@ FEIDIAN CHANGE LOG
   had been added. I don't know how the hell this slipped by testing.
 
 - v0.8a -
-* Major fix to the custom tile routine. The new hirearchy for custom tile
+* Major fix to the custom tile routine. The new hierarchy for custom tile
   letters is: [A-Z] [a-z] [2-9] [!?@*]
 
 - v0.8 -
-* COLOR! COLOR! AND THEN MORE COLOR! I fianlly got around to it. This means
+* COLOR! COLOR! AND THEN MORE COLOR! I finally got around to it. This means
   there are a few changes to the tile definition format. You can download any
-  of the sample definitions (they've all been edited for compatability) from
+  of the sample definitions (they've all been edited for compatibility) from
   the page and have a look, or check out the definition template that comes
   with FEIDIAN now. Currently, all formats, 16 colors or under, in Klarth's
   console graphics document are supported, as well as some others. This means:
@@ -94,23 +111,23 @@ FEIDIAN CHANGE LOG
     -   8x8 4bpp Game Gear/SMS/Wonderswan Color
     -   8x8 4bpp Megadrive/X68000
   There's also a few other tile definitions in development (I hear Kitsune is
-  doing an MSX definition, which apparantly NOTHING supports).
+  doing an MSX definition, which apparently NOTHING supports).
 * Tile definitions can now include their own dump and insert functions (for
   any adventurous programmers out there). This probably isn't necessary, but
   it's nice to have available.
-* Tile definitions support planar or linear byte arrangement (compatability
+* Tile definitions support planar or linear byte arrangement (compatibility
   with Virtual Boy and NeoGeo Pocket Color)
 * Speed-up to tile padding.
 
 - v0.7 (development only) -
-* Fixed some of the existing code for compatability with 16-color bitmaps in
+* Fixed some of the existing code for compatibility with 16-color bitmaps in
   preparation for v0.8.
 
 - v0.6 -
 * Tile padding has been added. You can now increase a tile's size by any x,y
   pixels without scaling the tile contents. 0 is assumed as the transparent
   bit (if this is really a problem, just invert your bitmap colors first).
-  This function has many uses, noteably preparation of a font for Optical
+  This function has many uses, notably preparation of a font for Optical
   Character Recognition (OCR), where an 8-10px spacing is needed for good
   results.
 * Binary Character Recognition (BCR) added (invented?). This method allows a
@@ -123,7 +140,7 @@ FEIDIAN CHANGE LOG
 
 - v0.5 -
 * FD font output support has been added. FD fonts can be compiled into
-  Windows 3.0/3.11/NT/95/98/Me/2000/XP compatable .FON files using the
+  Windows 3.0/3.11/NT/95/98/Me/2000/XP compatible .FON files using the
   excellent mkwinfont by Simon Tatham, available from his page at
   http://www.chiark.greenend.org.uk/~sgtatham/fonts/
   I would like to make .FON output automatic from FEIDIAN, but I don't know
@@ -147,8 +164,8 @@ FEIDIAN CHANGE LOG
 - v0.4 -
 * Expanded tile definitions to 62 bytes. This should cover most any 24x24 tile
   (assuming not EVERY byte needs to be defined, just the pattern). The new
-  letter hirearchy is A-Z a-z 0-9. 0-9 was put last instead of first to ensure
-  backwards compatability with older definitions.
+  letter hierarchy is A-Z a-z 0-9. 0-9 was put last instead of first to ensure
+  backwards compatibility with older definitions.
 * Added support for color inversion in the dumps. Inversion is supported in all
   insertion and ripping functions (you have no need for it in dual-tile
   building, even if you think you do). To invert, simply add an "i" to the

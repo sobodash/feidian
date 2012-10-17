@@ -51,7 +51,7 @@ arguments: tile_width,tile_height,pad_width,pad_height [input_bitmap] [output]
 [ -b  ]
 function : Binary character recognition. It will use a font and its matching
            text representation to match characters in another font set. The
-           characters matched are garuanteed 100% accuracy.
+           characters matched are guaranteed 100% accuracy.
 formats  : Monochrome or Color
 arguments: tile_width,tile_height,source_bmp,text_representation [input_bitmap]
            [output_text]

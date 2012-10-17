@@ -3,7 +3,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.89
+    Version: 0.90a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -29,7 +29,7 @@ include("settings.php");
 echo ("
  ,---------------------------------------------------------------------------.
  |   FEIDIAN: The Freaking Easy, Indispensible, Dot-Image formAt coNverter   |
- |   Version 0.89                          (C) 2003, 2004 Derrick Sobodash   |
+ |   Version 0.90a                         (C) 2003, 2004 Derrick Sobodash   |
  `---------------------------------------------------------------------------'
 ");
 set_time_limit(6000000);

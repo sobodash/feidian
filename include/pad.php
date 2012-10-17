@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.89
+    Version: 0.90a
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -44,9 +44,39 @@ function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $
     list($img_width, $img_height, $bpp) = getbmpinfo($in_file);
     if($bpp==4) {
       $bitmap = strrev(hexread($in_file, filesize($in_file)-0x76, 0x76));
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($columns*$tile_width)%8 >0) {
+        $tempmap = "";
+        $true_row = $tile_width*$columns;
+        while($true_row%8 > 0)
+          $true_row++;
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$true_row), ($true_row));
+          $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
     }
     else {
-      $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
+      $bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, $invert));
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($columns*$tile_width)%32 >0) {
+        $tempmap = "";
+        $true_row = $tile_width*$columns;
+        while($true_row%32 > 0)
+          $true_row++;
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$true_row), ($true_row));
+          $temp = substr($temp, $true_row-($tile_width*$columns), ($tile_width*$columns));
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
     }
   }
   else die(print "FATAL ERROR: You haven't defined an image format! Please check your setings.php\n");
@@ -113,14 +143,46 @@ function padtile($tile_width, $tile_height, $pad_width, $pad_height, $in_file, $
     writexpmpal($bitmap, $tile_width*$columns, $rows*$tile_height, $out_file, $prefix, $palette);
   }
   elseif(GRAPHIC_FORMAT=="bmp") {
-    $bitmap2 = "";
-    $bitmap = strrev($bitmap);
     // Transform back from bit string to data
     if($bpp==4) {
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($tile_width*$columns)%8 > 0) {
+        $tempmap = "";
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$tile_width*$columns), ($tile_width*$columns));
+          while(strlen($temp) % 8 > 0)
+            $temp = "0" . $temp;
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
+    
+      $bitmap2 = "";
+      $bitmap = strrev($bitmap);
+      
       for($i=0; $i<strlen($bitmap)/2; $i++)
         $bitmap2 .= chr(hexdec(substr($bitmap, $i*2, 2)));
     }
     else {
+      // The BMP standard forgets to mention bitmap is based on WORDs, not BYTEs.
+      // This is a fix to chop off the padding added to a tile to force
+      // compliance with the bitmap format.
+      if(($tile_width*$columns)%32 > 0) {
+        $tempmap = "";
+        for($i=0; $i<($tile_height*$rows); $i++) {
+          $temp = substr($bitmap, ($i*$tile_width*$columns), ($tile_width*$columns));
+          while(strlen($temp) % 32 > 0)
+            $temp = "0" . $temp;
+          $tempmap .= $temp;
+        }
+        $bitmap = $tempmap;
+      }
+    
+      $bitmap2 = "";
+      $bitmap = strrev($bitmap);
+      
       for($i=0; $i<strlen($bitmap)/8; $i++)
         $bitmap2 .= chr(bindec(substr($bitmap, $i*8, 8)));
     }

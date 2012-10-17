@@ -1,15 +1,6 @@
 <?php
 
 //-----------------------------------------------------------------------------
-// GENERAL OPERATION
-//-----------------------------------------------------------------------------
-// Force checking of color dump widths to be sure there's no chance of
-// corruption (addresses bug report by MadMalkav regarding color dumps where
-// total_image_width%8!=0)
-//
-define("FORCE_PROPER_WIDTH", TRUE);
-
-//-----------------------------------------------------------------------------
 // GRAPHIC FORMAT
 //-----------------------------------------------------------------------------
 // This will be the graphic format used for all I/O in FEIDIAN. BMP is Windows
