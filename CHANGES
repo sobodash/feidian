@@ -1,5 +1,50 @@
 FEIDIAN CHANGE LOG
 
+- v0.85 -
+* Fixed an severe error (set $bit2 twice) that was causing all 3bpp insertion
+  to break.
+* Fixed a glitch with linear insertion. Genesis/Megadrive seems to work
+  properly now. Can anyone verify if this holds true for NeoGeo Pocket Color?
+* Added CRC32 as an option for tile data in BCR. If you want to use CRC32,
+  uncomment the line in settings.php.
+* Changed the MD5 and SHA1 for BCR to use raw output instead of alpha-numeric.
+  This means the output will be half the length, making tile search even
+  quicker.
+* Optimized 60 lines in both custominj.php and customrip.php. But this is
+  pointless since full XPM support required adding a ton more.
+* Full support for XPM reading and writing in all functions. Hopefully this
+  proves useful to someone. On the upside of things, with XPM support GDLIB 2.0
+  should now be at my disposal.
+* Added a line to start muting notices. There's this minor annoyance about
+  declaring a color depth twice when working with custom tiles. It's because
+  the tile definition gets included twice. I've updated the tile definition
+  template to check if a color depth has been defined and updated all tile
+  definitions which people have submitted to the website, but this is just in
+  case you have some creeping around your computer based on the old format.
+* 8width.php has been completely phased out.
+
+- v0.8b -
+* Copyright.php has been renamed to settings.php (since it now has more
+  settings than just the default font copyright).
+* BCR improved to allow you to compare tiles by MD5sum or SHA1 hashes, as
+  well as gzipping the data. Options for this are in settings.php. Please read
+  the notes in settings.php before attempting any kind of BCR.
+* European characters at ASCII 0xa0-0xef can be used in tile definitions, IF
+  you enable them. Since Asian language systems cannot process these
+  characters, it is disabled by default. If you create a tile definition
+  dependant on these characters, please include a note that it requires
+  EXTEND_LETTERS==TRUE.
+* A new value, FORCE_PROPER_WIDTH, has been added to the settings. This
+  addresses an issue MadMalkav discovered where color graphics corrupt if
+  (columns*tile_width)%8!=0. This only affects tile widths that are not a
+  multiple of 8. If you are using such a tile width, consider dumping in a
+  multiple of 8 columns (8, 16, 24, 32, etc). If you forget, FEIDIAN will print
+  a notice and terminate. You can disable this in settings.php.
+* Custom insert and extract broken into two separate files to cut down on the
+  size and make it easier to edit (less to load, too).
+* Fixed a glitch that was breaking monochrome custom definitions since color
+  had been added. I don't know how the hell this slipped by testing.
+
 - v0.8a -
 * Major fix to the custom tile routine. The new hirearchy for custom tile
   letters is: [A-Z] [a-z] [2-9] [!?@*]

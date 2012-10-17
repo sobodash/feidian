@@ -1,7 +1,7 @@
 
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.8a
+    Version: 0.85
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -18,16 +18,17 @@ more than just a list of commands would.
  . : Contents : .
 -------------------------------------------------------------------------------
  i.... What is FEIDIAN?
- ii... Standard bitplane font format
- iii.. Creating a custom tile definition
- iv... Extracting a font
- v.... Inserting a font
- vi... Color tiles/Multiple planes
- vii.. Scaling and padding
- viii. Building a dual-letter font
- ix... BCR (Binary Character Recognition)
- x.... Other Notes
- xi... License
+ ii... Setting up
+ iii.. Standard bitplane font format
+ iv... Creating a custom tile definition
+ v.... Extracting a font
+ vi... Inserting a font
+ vii.. Color tiles/Multiple planes
+ viii. Scaling and padding
+ ix... Building a dual-letter font
+ x.... BCR (Binary Character Recognition)
+ xi... Other Notes
+ xii.. License
 
 -------------------------------------------------------------------------------
  i. What is FEIDIAN?
@@ -42,7 +43,64 @@ any width and any height. And tiles of this size are repeated again and again
 for as long as whatever is getting stored is being stored.
 
 -------------------------------------------------------------------------------
- ii. Standard bitplane font format
+ iii. Setting up
+-------------------------------------------------------------------------------
+FEIDIAN is fairly easy to set up, it just requires PHP. For help with
+downloading PHP and how to add it to your system path, please refer to
+the install.txt included in this archive.
+
+Once PHP is read, there's still a few more options for you to configure. These
+are all stored in settings.php. Open the file up in your favorite text editor
+(WARNING: Notepad will eat the Unix line breaks making the file one long line,
+you should use Wordpad if nothing else is available).
+
+The first option is a warning and is enabled by default. It will alert you if
+your dumping pattern could produce an invalid graphic, and halt dumping. It is
+strongly recommended you leave this enabled, but to disable it, just comment
+out the line (put "//" at the start of the line to comment it out).
+
+Next is your preferred graphic format. FEIDIAN can work with either BMP
+(Windows Bitmap) or XPM (X Pixmap) graphic formats. BMP is enabled by default.
+If you use an OS where a bitmap editor is not available, you can comment this
+line out and uncomment the one below it to use XPM instead.
+
+The next two options are the default name and copyright string of system fonts
+(BDF or FD/FON) produced by FEIDIAN. You can change these to anything you like.
+Just type the new text between the quotation marks, and if you want to use any
+quotation marks within your text, put a "\" before them.
+
+There's a load of options for Binary Character Recognition (BCR) as well. The
+first is what character to write when a tile isn't matched. It's recommended
+if matching dual byte tiles, you use a dual-byte character (or two spaces) to
+preserve the columns in the matched file.
+
+$char_bytes is the number of bytes used for the text encoding in your table
+file. If you're feeding in SJIS, you'd write "2" since SJIS is two bytes. If
+using Unicode, you'd enter "5", since Unicode is five bytes. All characters in
+the file must follow this encoding. Do not try to double up encodings in a
+file (example: SJIS, Unicode and EUC-KR), this will cause corrupt output.
+
+The next up is hashing options for tile comparison. The shorter your hash, the
+faster matching will be. The longer your hash, the less chance of mismatched
+tiles. With no hash, there's no chance of errors, but PHP arrays are known to
+be glitchy when containing too long an entry. It is recommended you use a hash,
+since the chance of error is around 1:16,980,000 -- fairly good odds when
+you're giving it less than 3000 characters. You can only declare ONE hashing
+method. This means all expect the one you are using should be commented out.
+
+If you must use no hash, there's an option for Gzipping the tiles. This is
+your best option for hash-free matching. It can also be used with the hashes
+themselves, though it probably would not improve performance (any time saved
+by the smaller tiles would be wasted since it takes time to Gzip them). Just
+uncomment the line to enable Gzipping.
+
+The last option is for custom tiles. By uncommenting it, you can use the
+high-ascii European characters in your tile definitions. This is commented out
+by default, so if you do use them in a definition, alert people to uncomment
+this line before using your tile definition!
+
+-------------------------------------------------------------------------------
+ iii. Standard bitplane font format
 -------------------------------------------------------------------------------
 So let's take a VERY common tile size, 8x16. This means the tile is 8 bits
 wide and 16 bits tall. Since a byte is 8 bits, this tile would be 16 bytes in
@@ -74,7 +132,7 @@ And so on. This means we have one full byte on the first line, the upper nibble
 next byte. Then the pattern repeats.
 
 -------------------------------------------------------------------------------
- iii. Creating a custom tile definition
+ iv. Creating a custom tile definition
 -------------------------------------------------------------------------------
 So FEIDIAN will handle the above example, since it's all one after another. But
 what if you ran across a REALLY queer game that used something 12x12, but did
@@ -122,7 +180,7 @@ will crash if you try to use it.
 So, easy enough so far? I hope so.
 
 -------------------------------------------------------------------------------
- iv. Extracting a font
+ v. Extracting a font
 -------------------------------------------------------------------------------
 Now it's time to actually dump the font. You need to know where it begins at
 in the ROM. This I cannot help you with, you'll need to either debug and find
@@ -178,7 +236,7 @@ So have you followed the walkthrough so far, this is actually a functional
 command line you could use to dump that font.
 
 -------------------------------------------------------------------------------
- v. Inserting a font
+ vi. Inserting a font
 -------------------------------------------------------------------------------
 Ok. So now you're a master of making your own tile definitions and dumping
 fonts with FEIDIAN. What else can it do? Well, let's take that nifty
@@ -200,7 +258,7 @@ game right now (unless you inserted a string of all those first tiles in a row),
 but this shows how FEIDIAN can insert a graphic back into the game.
 
 -------------------------------------------------------------------------------
- vi. Color tiles/Multiple planes
+ vii. Color tiles/Multiple planes
 -------------------------------------------------------------------------------
 Color is a wonderful thing. It's what allows us to have games more complicated
 than TI-Calculator games and Pong. But color takes more than what default
@@ -238,7 +296,7 @@ second is green and the third is blue. You can change them to any value between
 After you have your palette the way you want, just redump the graphic.
 
 -------------------------------------------------------------------------------
- vii. Scaling and padding
+ viii. Scaling and padding
 -------------------------------------------------------------------------------
 Both monochrome and color bitmaps can be scaled by FEIDIAN with no problems.
 To scale a graphic, use this command line:
@@ -256,7 +314,7 @@ size, not a new tile size. The command line for padding is:
     feidian -p tile_width,tile_height,pad_width,pad_height input.bmp output
 
 -------------------------------------------------------------------------------
- viii. Building a dual-letter font
+ ix. Building a dual-letter font
 -------------------------------------------------------------------------------
 How would this be useful? We're getting there, hold your horses.
 
@@ -307,7 +365,7 @@ So, if you were doing a 16x16 font, you could follow the above example and
 include and 8x16 bitmap instead. I'm sure you're getting the idea.
 
 -------------------------------------------------------------------------------
- ix. BCR (Binary Character Recognition)
+ x. BCR (Binary Character Recognition)
 -------------------------------------------------------------------------------
 One of the most annoying parts of translation is having to make a table for
 the font to get a script dump. Rather than starting from scratch every time,
@@ -327,7 +385,7 @@ The command line for binary character recognition is:
   feidian -b tile_width,tile_height,source_bitmap,text_version input.bmp output
 
 -------------------------------------------------------------------------------
- x. Other Notes
+ xi. Other Notes
 -------------------------------------------------------------------------------
 So what else can FEIDIAN do? At the moment, a whole lot of  N O T H I N G ! ! !
 
@@ -344,7 +402,7 @@ lose JumpStation.org and $150 in pre-paid service.
  T H A N K   Y O U   F O R   R E A D I N G   A N D   S E E   Y O U   N E X T !
 
 -------------------------------------------------------------------------------
- xi. License
+ xii. License
 -------------------------------------------------------------------------------
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
