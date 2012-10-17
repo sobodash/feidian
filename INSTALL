@@ -1,0 +1,33 @@
+Installing FEIDIAN
+
+FEIDIAN requires PHP in order to function. You can download PHP for free from
+http://www.php.net/. Download the zip of Windows Binaries and extract it to
+C:\PHP\. I am not including instructions for installing PHP on FreeBSD/Linux
+because if you use either of those OS'es, you better damn well know how
+already, or at least be able to figure out out.
+
+Once the zip is extracted, open up the folder. Copy php.ini-dist to C:\Windows
+and rename it to php.ini. Then open the \dlls\ folder, select all the files and
+copy them to C:\Windows\System32 (or C:\Windows\System if you're on 98).
+
+Next, you should add PHP to your path. On Windows 2000/XP, right click
+My Computer, pick Properties. Click the Advanced Tab then click the
+Environment Variables command button. In the second window, there will be an
+option for PATH. Double click it. Add to the end of the existing text:
+
+  ;C:\PHP
+
+Hit OK, you're all done.
+
+If you're on Windows 98, the PATH is determined by your AUTOEXEC.BAT. Open it
+in notepad and look for the PATH= line. Add the above text to the end of that
+line, save, and reboot your computer.
+
+Congratulations, PHP is installed!
+
+If you're a Linux/FreeBSD user, feidian.php already includes the shell script
+call to use the PHP interpreter. Just CHMOD it 755 and run it as ./feidian.php.
+
+For Windows users, you will need to call PHP manually. This just means typing:
+"php feidian.php" and then your arguments.
+

@@ -1,0 +1,293 @@
+
+    FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
+    Copyright (C) 2003 Derrick Sobodash
+    Version: 0.3
+    Web    : https://github.com/sobodash/feidian
+    E-mail : derrick@sobodash.com
+
+-------------------------------------------------------------------------------
+
+Please read changes.txt for information about newly supported commands.
+
+For reference, this README is really more of a case study to give the user a
+feel for how this program can actually be applied to real scenarios. I think
+something like this helps people ot see the actual value of a program a lot
+more than just a list of commands would.
+
+-------------------------------------------------------------------------------
+ . : Contents : .
+-------------------------------------------------------------------------------
+ i.... What is FEIDIAN?
+ ii... Standard bitplane font format
+ iii.. Creating a custom tile definition
+ iv... Extracting a font
+ v.... Inserting a font
+ vi... Building a dual-letter font
+ vii.. Other Notes
+ viii. License
+
+-------------------------------------------------------------------------------
+ i. What is FEIDIAN?
+-------------------------------------------------------------------------------
+So you've downloaded FEIDIAN. I'm already impressed. Nobody EVER uses anything
+I write, so I'm just, wow, I'm impressed.
+
+So what is FEIDIAN? FEIDIAN is a tool for going between monochrome bitmap and
+monochrome bitplane (aka 1bpp) graphic formats at any size whatsoever. If
+you're new to the concept of bitplane graphics, basically it works like this.
+You have a tile. It can be any width and any height. And tiles of this size
+are repeated again and again for as long as whatever is getting stores is
+being stored.
+
+-------------------------------------------------------------------------------
+ ii. Standard bitplane font format
+-------------------------------------------------------------------------------
+So let's take a VERY common tile size, 8x16. This means the tile is 8 bits
+wide and 16 bits tall. Since a byte is 8 bits, this tile would be 16 bytes in
+the file ((8*16)/8). Simple, yes? I thought so.
+
+So far, we're still in the realm of things every other tile tool on the planet
+can do -- that being multiples of 8. People like working with bytes because
+they're fast and fairly regular. When you get into tiles that do not store
+their rows in complete bytes, it can get a little hairy.
+
+Say you have a file that is 12x14. That means there are 12 bits to a line. Good
+luck finding a tile editor that will handle that. If you find one, send the
+author a hearty thank you because virtually NOBODY fells like adding support
+for such widths, even though it's INCREDIBLY common.
+
+So how are these 12 bits being stored? Well, most commonly, multiple bytes are
+just hooked together in a long, wrapping bit string. Let's pretend our first
+byte is "A," our second is "B," and so on. A will be repeated 8 times for each
+bit in A.
+
+                               AAAAAAAABBBB
+                               BBBBCCCCCCCC
+                               DDDDDDDDEEEE
+                               EEEEFFFFFFFF
+                               ...
+
+And so on. This means we have one full byte on the first line, the upper nibble
+(4 bits of a byte) on that line, the lower nibble on the next line, then the
+next byte. Then the pattern repeats.
+
+-------------------------------------------------------------------------------
+ iii. Creating a custom tile definition
+-------------------------------------------------------------------------------
+So FEIDIAN will handle the above example, since it's all one after another. But
+what if you ran across a REALLY queer game that used something 12x12, but did
+not even bother keeping the bits in that logical an order (*cough* NCS/Masaya's
+Der Langrisser *cough*). In Der Langrisser, your bits are like this:
+
+                               AAAAAAAABBBB
+                               CCCCCCCCBBBB
+                               DDDDDDDDEEEE
+                               FFFFFFFFEEEE
+                               ...
+
+Well uh-oh. FEIDIAN is not a crystal ball, so it can't see every possible tile
+pattern imaginable. But it DOES allow the user to create their own custom tile
+patterns! This is quite possibly the most useful feature in FEIDIAN.
+
+How does one do this? First off, download any sample template off the FEIDIAN
+webpage (http://feidian.sourceforge.net/) and pop it open in Notepad, vi,
+or if you're scared to use a computer, pico. This file is heavily commented
+(a comment is a line beginning with //) and should give you all the info you
+need. But in case it's not enough, I'll walk you through making one from
+scratch.
+
+First off, a tile definition needs to say how tall and how wide a tile is.
+There are two variables in the file to do this: $tile_width and $tile_height
+(in PHP, a variable always has $ before the name). So for our 12x12 tile
+example, we would write:
+  $tile_width  = 12;
+  $tile_height = 12;
+Easy! Next, we need to define out above pattern. Well let's think carefully, so
+we can keep our pattern as lean as possible. In the above example, the pattern
+repeats itself after byte C. So that means, we only need to define up to that.
+  $byte_order  = "AAAAAAAABBBB
+                  CCCCCCCCBBBB";
+Voila. You have just defined your byte pattern. That was the hardest part! The
+only thing left is to say how many bytes are needed for the pattern. In this
+case, it's three bytes (A, B and C). So we'll put:
+  $pat_size    = 3;
+
+You're all done! Save your file with a meaningful name with the extension .php.
+(For this example, I chose dl.php since it's Der Langrisser). Also make sure
+the first line of your file is "<?" and the last is "?>" Otherwise, FEIDIAN
+will crash if you try to use it.
+
+So, easy enough so far? I hope so.
+
+-------------------------------------------------------------------------------
+ iv. Extracting a font
+-------------------------------------------------------------------------------
+Now it's time to actually dump the font. You need to know where it begins at
+in the ROM. This I cannot help you with, you'll need to either debug and find
+where it's loading from, or use your eyeballs and a lot of patience! Neill
+Corlett's "Nana" tile viewer can be very helpful for this, but it can't show
+anything that's not a multiple of 8 in 1bpp. There's a trick though, to help
+you with 12x12 tiles. Since the width is 12, the nearest multiple of 8 would
+be 24. If you set the width to 24, it should help you find your tiles (though
+it will look broken).
+
+Find the offset in the file where your tiles begin and write it down. It should
+be something like 0xdeadbeef (poor example, but dead beef is my favorite kind).
+Armed with the offset, your tile size, or your custom definition, you are
+ready to use FEIDIAN.
+
+FEIDIAN is capable of three modes. Insertion, ripping, and creating custom
+tile sets using a list of letters (more on this later!) The modes are:
+
+  r - rips bitplane to bitmap
+  i - injects bitplane to bitmap
+  d - creates dual-letter set.
+
+There's also a prefix, "c," for when you're using a custom set.
+
+If we were going with our very first example, which was not a custom tile, we
+would run FEIDIAN like this:
+
+  feidian -r 12,12,16,16,0xdeadbeef ourrom.rom output
+
+This is a VERY simple command line. Let's go through its components.
+
+  width,height,rows,columns,offset
+
+The width is your tile width, 12. The height is also 12 for this example.
+The 16 is how many tiles should be in a column. The next 16 is how many rows
+of tiles you want to dump. The above example would dump the first 256 12x12
+tiles located at 0xdeadbeef in ourrom.rom. It would output a bitmap of them
+to output_12x12.bmp.
+
+Easy enough? Kick ass.
+
+Now for our Der Langrisser example, it's a bit different.
+
+  feidian -cr dl,16,16,0x11814c derlang.smc output
+
+Notice the -cr? That means we're using a custom tile definition. Out command
+line is the same as before, except now, we replace the tile width and height
+with out custom definition (which we saved as dl.php). Your definition should
+be in the /tiles/ folder of the FEIDIAN directory.
+
+The offset shown is actually the real offset for Der Langrisser's 12x12 tiles.
+So have you followed the walkthrough so far, this is actually a functional
+command line you could use to dump that font.
+
+-------------------------------------------------------------------------------
+ v. Inserting a font
+-------------------------------------------------------------------------------
+Ok. So now you're a master of making your own tile definitions and dumping
+fonts with FEIDIAN. What else can it do? Well, let's take that nifty
+output_12x12.bmp we just made an crack it open in Paintbrush. Flood the thing
+with black and bust open the text tool (white text, black background). Make
+a big textbox and type something fun, like
+
+  "I ABSOLUTELY DESPISE HOW ANNOYING
+  THE STUPID SSH SYSTEM IS FOR
+  UPLOADING NEW FILES.
+
+Now, let's try this.
+
+  feidian -ci dl,16,16,0x11814c output_12x12.bmp derlang.smc
+
+Congratulations, you have just replaced all those first tiles in Der Langrisser
+with the above text. This is totally useless, since you can't see it in the
+game right now (unless you inserted a string of all those first tiles in a row),
+but this shows how FEIDIAN can insert a graphic back into the game.
+
+-------------------------------------------------------------------------------
+ vi. Building a dual-letter font
+-------------------------------------------------------------------------------
+How would this be useful? We're getting there, hold your horses.
+
+First off, we will need a font. A FONT YOU SAY?! Yes, but not just any font.
+It needs to be half the width of our desired tile size, 16 columns wide, and 16
+rows high. Yes, 256 tiles. And they need to correspond to the ASCII ordering.
+
+Aren't I demanding? Well, since I'm not a totally heartless bastard, I'm
+thinking of implementing a system to let you make a corresponding text map to
+a bitmap, so you only need ot include the letters you want. But that's down the
+development road.
+
+So we need to make a graphic that has 16 rows and 16 columns of 6x12 tiles on
+it. Rather, YOU need to. Get to work, Photoshop whore!
+
+When you've done this, copy and paste it into Paintbrush and save it as a
+monochrome bitmap (it's in the dropdown list). Adobe doesn't like complying
+with the M$ BITMAP standards, so while it may rock for drawing, it will eat
+your graphic if you save. And if that happens, FEIDIAN won't like you anymore.
+It might even give you a severe, acute respiratory syndrome, just for looking
+at it funny (hah, get it? FEIDIAN. HAH).
+
+Next up, you need a list. A LIST?! A list! And it should have two letters on
+each line. Here's an example:
+
+  I 
+  do
+   n
+  ot
+   l
+  ik
+  e 
+  te
+  nt
+  ac
+  le
+   m
+  on
+  st
+  er
+  s.
+
+Save that as something like "japan.txt"
+
+So here goes our command line fun!
+  feidian -d 6,12,japan.txt my_6x12.bmp output
+
+This could take a while, so be patient. What this will do is make a new 12x12
+font where each 12x12 tile contains one of your two-letter combos written using
+the 6x12 font you gave it.
+
+So, if you were doing a 16x16 font, you could follow the above example and
+include and 8x16 bitmap instead. I'm sure you're getting the idea.
+
+-------------------------------------------------------------------------------
+ vii. Other Notes
+-------------------------------------------------------------------------------
+So what else can FEIDIAN do? At the moment, a whole lot of  N O T H I N G ! ! !
+
+And the reason for that is, everything else is already covered by another tool.
+Just look for something to do it at http://www.romhacking.net/. FEIDIAN is
+really just my way of filling in a GAPING need in the world of translation
+tools, and it was mostly written to do things I've found myself needing again
+and again that no other tool could do.
+
+I hope you find it useful, and if not, do me the courtesy of not insulting me/
+flaming my message board/filing bogus complaints with my host causing me to
+lose JumpStation.org and $150 in pre-paid service.
+
+ T H A N K   Y O U   F O R   R E A D I N G   A N D   S E E   Y O U   N E X T !
+
+-------------------------------------------------------------------------------
+ viii. License
+-------------------------------------------------------------------------------
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program (license.txt); if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+This archive is subject to license.txt. Read it, or die.
+--
+
+

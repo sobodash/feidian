@@ -1,0 +1,23 @@
+FEIDIAN Command List:
+
+[ -r  ]
+function : Rips bitplane data to a bitmap
+arguments: tile_width,tile_height,columns,rows,offset [source] [bitmap]
+
+[ -cr ]
+function : Rips bitplane data to a bitmap using a tile definition
+arguments: tile_definition_name,columns,rows,offset [source] [bitmap]
+
+[ -i  ]
+function : Injects a bitmap back to bitplane data
+arguments: tile_width,tile_height,columns,rows,offset [bitmap] [target]
+
+[ -ci ]
+function : Injects a bitmap back to bitplane data using a tile definition
+arguments: tile_width,tile_height,columns,rows,offset [source] [bitmap]
+
+[ -d  ]
+function : Builds a set of full width tiles using a half width font and a
+           text file of two-letter combos
+arguments: tile_width,tile_height,text_file [font_bitmap] [output]
+
