@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.4
+    Version: 0.5
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -99,6 +99,9 @@ function bit2tile($rows, $columns, $tile_height, $tile_width, $seekstart, $in_fi
 		unset($tile);
 	}
 	$output = "";
+	// Make sure the binary string is a multiple of 8
+	while(strlen($bitplane)%8!=0)
+		$bitplane .= "0";
 	// Transform back from binary string to data
 	for($i=0; $i<strlen($bitplane)/8; $i++)
 		$output .= chr(bindec(substr($bitplane, $i*8, 8)));

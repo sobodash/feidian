@@ -1,5 +1,28 @@
 FEIDIAN CHANGE LOG
 
+- v0.5 -
+* FD font output support has been added. FD fonts can be compiled into
+  Windows 3.0/3.11/NT/95/98/Me/2000/XP compatable .FON files using the
+  excellent mkwinfont by Simon Tatham, available from his page at
+  http://www.chiark.greenend.org.uk/~sgtatham/fonts/
+  I would like to make .FON output automatic from FEIDIAN, but I don't know
+  Python. If anyone can give me a nice file format map based off his source, I
+  can add it to FEIDIAN.
+  NOTE: Source bitmaps for FD output should be 256 tiles in ASCII order.
+* Fixed a glitch that caused dual-tile generation to break when the tiles did
+  not end evenly on a multiple of 8 bits.
+
+- v0.45a -
+* What wonderful luck. When uploading the bug fix release of 0.45, I broke the
+  directory structure, rendering the bug fix release EVEN MORE BUGGED! Here's a
+  correct version, and I'm very sorry for that mistake. 0.45 has been pulled
+  from distribution.
+
+- v0.45 -
+* Bug fix release: Added much needed input checking to keep users from
+  glitching FEIDIAN with malformed command strings. Also corrected an error
+  in the insertion routine for custom tiles using the new 62-byte format.
+
 - v0.4 -
 
 * Expanded tile definitions to 62 bytes. This should cover most any 24x24 tile

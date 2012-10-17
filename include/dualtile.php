@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.4
+    Version: 0.5
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -50,7 +50,7 @@ function bit2tile($tile_height, $tile_width, $tile_list, $in_file, $out_file) {
 	$prefix = $tile_width . "x" . $tile_height;
 	print "Injecting $prefix into $out_file...\n";
 
-	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62));
+	$bitmap = strrev(binaryread($in_file, filesize($in_file)-62, 62, 0));
 
 	$ptr=0; $bitplane = "";
 	print "  Converting bitmap to bitplane...\n";
@@ -69,11 +69,8 @@ function bit2tile($tile_height, $tile_width, $tile_list, $in_file, $out_file) {
 		unset($tile);
 	}
 	$output = "";
-	// Transform back from binary string to data
-	for($i=0; $i<strlen($bitplane)/8; $i++)
-		$output .= chr(bindec(substr($bitplane, $i*8, 8)));
 	for($i=0; $i<256; $i++)
-		$tilebank[$i] = substr($output, $i*(($tile_width*$tile_height)/8), (($tile_width*$tile_height)/8));
+		$tilebank[$i] = substr($bitplane, $i*(($tile_width*$tile_height)), (($tile_width*$tile_height)));
 	
 	$tl = fopen($tile_list, "rb");
 	$tldump = fread($tl, filesize($tile_list));
@@ -86,10 +83,8 @@ function bit2tile($tile_height, $tile_width, $tile_list, $in_file, $out_file) {
 	while(strlen($tldump) % $columns != 0)
 		$tldump .= " ";
 	for($i=0; $i<strlen($tldump); $i++)
-		$fddump .= $tilebank[hexdec(bin2hex($tldump[$i]))];
-	for($i=0; $i<strlen($fddump); $i++) {
-		$binarydump .= str_pad(decbin(hexdec(bin2hex(substr($fddump, $i, 1)))), 8, "0", STR_PAD_LEFT);
-	}
+		$binarydump .= $tilebank[hexdec(bin2hex($tldump[$i]))];
+
 	$rows = strlen($tldump)/$columns;
 	$bitmap = "";
 	print "  Converting to bitmap...\n";

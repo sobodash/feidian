@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.4
+    Version: 0.5
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -150,7 +150,7 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
 		unset($tile);
 	}
 	$hackplane = "";
-	// The routine matches the characters in out pattern definition to
+	// The routine matches the characters in our pattern definition to
 	// points in the binary string, then writes whatever bit is present to
 	// a new byte string.
 	for ($z=0; $z<strlen($bitplane); $z=$z+$pat_size*8) {
@@ -158,9 +158,19 @@ function bmp2cust($rows, $columns, $tiledef, $seekstart, $in_file, $out_file, $i
 		$temp_pattern = array("","","");
 		for($g=0; $g<$pat_size; $g++) {
 			$posx = 0;
+/*			// Obsoleted code for 26 byte tile definition
 			// Ascend from A-Z
 			while(strpos($byte_order, chr(0x41+$g), $posx) !== FALSE) {
 				$getpos = strpos($byte_order, chr(0x41+$g), $posx);
+				$temp_pattern[$g] .= $tiles[$getpos];
+				$posx=$getpos+1;
+			}*/
+			// Ascend through A-Z, a-z, 0-9
+			if($g<26) $offvar = 0x41;
+			else if($g<52) $offvar = 0x61 - 26;
+			else if($g<62) $offvar = 0x30 - 52;
+			while(strpos($byte_order, chr($offvar+$g), $posx) !== FALSE) {
+				$getpos = strpos($byte_order, chr($offvar+$g), $posx);
 				$temp_pattern[$g] .= $tiles[$getpos];
 				$posx=$getpos+1;
 			}

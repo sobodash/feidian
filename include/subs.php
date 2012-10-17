@@ -2,7 +2,7 @@
 /*
     FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
     Copyright (C) 2003,2004 Derrick Sobodash
-    Version: 0.4
+    Version: 0.5
     Web    : https://github.com/sobodash/feidian
     E-mail : derrick@sobodash.com
 
@@ -27,6 +27,9 @@
 // rather not have to write 90x.
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+// binaryread - reads a file to a bit string
+//-----------------------------------------------------------------------------
 function binaryread($filename, $length, $offset, $invert) {
 	$fd = fopen($filename, "rb");
 	fseek($fd, $offset, SEEK_SET);
@@ -49,6 +52,9 @@ function binaryread($filename, $length, $offset, $invert) {
 	return($binarydump);
 }
 
+//-----------------------------------------------------------------------------
+// fileread - reads a file
+//-----------------------------------------------------------------------------
 function fileread($filename, $length, $offset) {
 	$fd = fopen($filename, "rb");
 	fseek($fd, $offset, SEEK_SET);
@@ -57,6 +63,9 @@ function fileread($filename, $length, $offset) {
 	return($fddump);
 }
 
+//-----------------------------------------------------------------------------
+// injectfile - inserts data into another file
+//-----------------------------------------------------------------------------
 function injectfile($out_file, $seekstart, $bitplane) {
 	$top=""; $bottom="";
 	if (file_exists($out_file)){
@@ -71,6 +80,9 @@ function injectfile($out_file, $seekstart, $bitplane) {
 	fclose($fo);
 }
 
+//-----------------------------------------------------------------------------
+// bitmapheader - writes a valid monochrome bitmap header
+//-----------------------------------------------------------------------------
 function bitmapheader($length, $width, $height) {
 	// Base of the bitmap header
 	$header = "BM" . pack("V*", $length+62) . pack("V*", 0) . pack("V*", 62);
@@ -84,6 +96,49 @@ function bitmapheader($length, $width, $height) {
 	$rgbquad = chr(0xff) . chr(0xff) . chr(0xff) . chr(0);
 	
 	return($header . $info_header . $rgbquad);
+}
+
+//-----------------------------------------------------------------------------
+// getbmpscale - gets the dimensions of a bmp for scaling
+//-----------------------------------------------------------------------------
+function getbmpscale($in_file) {
+	$fd = fopen($in_file, "rb");
+	fseek($fd, 0x12, SEEK_SET);
+	$img_width  = hexdec(bin2hex(strrev(fread($fd, 4))));
+	fseek($fd, 0x16, SEEK_SET);
+	$img_height = hexdec(bin2hex(strrev(fread($fd, 4))));
+	fclose($fd);
+	return(array($img_width, $img_height));
+}
+
+//-----------------------------------------------------------------------------
+// makevwftile - autosizes a fixed tile for VWF
+//-----------------------------------------------------------------------------
+function makevwftile($tile, $width, $spacing){
+	$wrapped = wordwrap($tile, $width, "\n", 1);
+	$tilelines = split("\n", $wrapped);
+	while($trimmed!=1) {
+		for($i=0; $i<count($tilelines); $i++){
+			if(substr($tilelines[$i], strlen($tilelines[$i])-1, 1)=="1")
+				$trimmed=1;
+		}
+		if($trimmed!=1)
+			for($i=0; $i<count($tilelines); $i++)
+				$tilelines[$i] = substr($tilelines[$i], 0, strlen($tilelines[$i])-1);
+		if(strlen($tilelines[0])==0){
+			for($i=0; $i<count($tilelines); $i++)
+				for($k=0; $k<$spacing*3; $k++)
+					$tilelines[$i].="0";
+			$trimmed=1;
+		}
+	}
+	for($i=0; $i<count($tilelines); $i++)
+		for($k=0; $k<$spacing; $k++)
+			$tilelines[$i].="0";
+	$output="";
+	for($i=0; $i<count($tilelines); $i++)
+		$output .= $tilelines[$i];
+	return(array($output, strlen($tilelines[0])));
 }
 
 ?>
