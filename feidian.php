@@ -14,7 +14,7 @@ License:   BSD License <http://opensource.org/licenses/bsd-license.php>
 
 */
 
-//error_reporting (E_WARNING | E_PARSE);
+error_reporting (E_WARNING | E_PARSE);
 include("include/subs.php");
 include("settings.php");
 
