@@ -163,12 +163,12 @@ function makebdf($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, 
                  "DWIDTH $tile_width 0\n" .
                  "FONTBOUNDINGBOX $tile_width $tile_height 0 $descent\n" .
                  "BITMAP\n";
-      $tile_lines = split("\n", wordwrap($tilebank[$i], $tile_width, "\n", 1));
+      $tile_lines = explode("\n", wordwrap($tilebank[$i], $tile_width, "\n", 1));
       for($k=0; $k<count($tile_lines); $k++){
         while(strlen($tile_lines[$k])%8!=0)
           $tile_lines[$k].="0";
         if(strlen($tile_lines[$k])>8){
-          $tile_frags = split("\n", wordwrap($tile_lines[$k], 8, "\n", 1));
+          $tile_frags = explode("\n", wordwrap($tile_lines[$k], 8, "\n", 1));
           for($z=0; $z<count($tile_frags); $z++)
             $output .= str_pad(dechex(bindec($tile_frags[$z])), 2, "0", STR_PAD_LEFT);
           $output .= "\n";
@@ -182,12 +182,12 @@ function makebdf($tile_width, $tile_height, $vwf, $spacing, $descent, $in_file, 
                  "DWIDTH $tilewidth 0\n" .
                  "FONTBOUNDINGBOX $tilewidth $tile_height 0 $descent\n" .
                  "BITMAP\n";
-      $tile_lines = split("\n", wordwrap($thistile, $tilewidth, "\n", 1));
+      $tile_lines = explode("\n", wordwrap($thistile, $tilewidth, "\n", 1));
       for($k=0; $k<count($tile_lines); $k++){
         while(strlen($tile_lines[$k])%8!=0)
           $tile_lines[$k].="0";
         if(strlen($tile_lines[$k])>8){
-          $tile_frags = split("\n", wordwrap($tile_lines[$k], 8, "\n", 1));
+          $tile_frags = explode("\n", wordwrap($tile_lines[$k], 8, "\n", 1));
           for($z=0; $z<count($tile_frags); $z++)
             $output .= str_pad(dechex(bindec($tile_frags[$z])), 2, "0", STR_PAD_LEFT);
           $output .= "\n";

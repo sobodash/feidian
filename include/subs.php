@@ -179,7 +179,7 @@ function xpm2bitstring($in_file, $invert) {
   while($diebit==0) {
     $buffer = trim(fgets($fd, 0x20000));
     if((substr($buffer, 0, 2) != "/*")&&(substr($buffer, 0, 6)!="static")) {
-      list($width, $height, $color_depth, $byte_count) = split(" ", substr($buffer, 1, (strlen($buffer)-2)));
+      list($width, $height, $color_depth, $byte_count) = explode(" ", substr($buffer, 1, (strlen($buffer)-2)));
       $diebit=1;
     }
   }
@@ -251,7 +251,7 @@ function getxpminfo($in_file) {
   while($diebit==0) {
     $buffer = trim(fgets($fd, 0x20000));
     if((substr($buffer, 0, 2) != "/*")&&(substr($buffer, 0, 6)!="static")) {
-      list($width, $height, $color_depth, $byte_count) = split(" ", substr($buffer, 1, (strlen($buffer)-2)));
+      list($width, $height, $color_depth, $byte_count) = explode(" ", substr($buffer, 1, (strlen($buffer)-2)));
       $diebit=1;
     }
   }
@@ -331,7 +331,7 @@ function getbmpinfo($in_file) {
 //-----------------------------------------------------------------------------
 function makevwftile($tile, $width, $spacing){
   $wrapped = wordwrap($tile, $width, "\n", 1);
-  $tilelines = split("\n", $wrapped);
+  $tilelines = explode("\n", $wrapped);
   while($trimmed!=1) {
     for($i=0; $i<count($tilelines); $i++){
       if(substr($tilelines[$i], strlen($tilelines[$i])-1, 1)=="1")

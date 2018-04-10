@@ -14,7 +14,7 @@ License:   BSD License <http://opensource.org/licenses/bsd-license.php>
 
 */
 
-error_reporting (E_WARNING | E_PARSE);
+//error_reporting (E_WARNING | E_PARSE);
 include("include/subs.php");
 include("settings.php");
 
@@ -28,7 +28,7 @@ else {
 }
 
 if ($mode == "-r") {
-  list($width, $height, $columns, $rows, $start) = split(",", $command);
+  list($width, $height, $columns, $rows, $start) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($width==''||$height==''||$columns==''||$rows==''||$start=='') die(print "ERROR: Your command string is incomplete!\n");
   // Check width/height/columns/rows
@@ -47,7 +47,7 @@ if ($mode == "-r") {
   }
 }
 elseif ($mode == "-i") {
-  list($width, $height, $columns, $rows, $start) = split(",", $command);
+  list($width, $height, $columns, $rows, $start) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($width==''||$height==''||$columns==''||$rows==''||$start=='') die(print "ERROR: Your command string is incomplete!\n");
   // Check width/height/columns/rows
@@ -70,7 +70,7 @@ elseif ($mode == "-cr") {
     if($argv[2] != "i") $tlp_pal = $argv[5];
     else $tlp_pal = $argv[6];
   }
-  list($tiledef, $columns, $rows, $start) = split(",", $command);
+  list($tiledef, $columns, $rows, $start) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($tiledef==''||$columns==''||$rows==''||$start=='') die(print "ERROR: Your command string is incomplete!\n");
   // Make sure columns/rows/offset are an integer
@@ -88,7 +88,7 @@ elseif ($mode == "-cr") {
   else cust2bmp($rows, $columns, $tiledef, $start, $in_file, $out_file, 0, $tlp_pal);
 }
 elseif ($mode == "-ci") {
-  list($tiledef, $columns, $rows, $start) = split(",", $command);
+  list($tiledef, $columns, $rows, $start) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($tiledef==''||$columns==''||$rows==''||$start=='') die(print "ERROR: Your command string is incomplete!\n");
   // Make sure columns/rows/offset are an integer
@@ -102,7 +102,7 @@ elseif ($mode == "-ci") {
   else bmp2cust($rows, $columns, $tiledef, $start, $in_file, $out_file, 0);
 }
 elseif ($mode == "-d") {
-  list($width, $height, $tile_list) = split(",", $command);
+  list($width, $height, $tile_list) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($width==''||$height==''||$tile_list=='') die(print "ERROR: Your command string is incomplete!\n");
   // Test to make sure width and height are numeric
@@ -115,7 +115,7 @@ elseif ($mode == "-d") {
   bit2tile($height, $width, $tile_list, $in_file, $out_file);
 }
 elseif ($mode == "-s") {
-  list($width, $height) = split(",", $command);
+  list($width, $height) = explode(",", $command);
   // Make sure the command string isn't missing anything
   if($width==''||$height=='') die(print "ERROR: Your command string is incomplete!\n");
   // Test to make sure width and height are numeric
@@ -127,7 +127,7 @@ elseif ($mode == "-s") {
   else scale($height, $width, $in_file, $out_file, 0);
 }
 elseif ($mode == "-wf") {
-  list($width, $height, $format, $vwf, $spacing, $descent) = split(",", $command);
+  list($width, $height, $format, $vwf, $spacing, $descent) = explode(",", $command);
   // Test all input, yeah, I'm too lazy to add a comment for everything now :P
   if ($width==''||$height==''||$format==''||$vwf==''||$spacing==''||$descent=='') die(print "ERROR: Your command string is incomplete!\n");
   if(!is_numeric($width)||!is_numeric($height)) die(print "ERROR: Your width or height is a non-integer value!\n");
@@ -140,7 +140,7 @@ elseif ($mode == "-wf") {
   else makefd($width, $height, $vwf, $spacing, $descent, $in_file, $out_file);
 }
 elseif ($mode == "-p") {
-  list($width, $height, $pad_width, $pad_height) = split(",", $command);
+  list($width, $height, $pad_width, $pad_height) = explode(",", $command);
   // Test all input, yeah, I'm too lazy to add a comment for everything now :P
   if ($width==''||$height==''||$pad_width==''||$pad_height=='') die(print "ERROR: Your command string is incomplete!\n");
   if(!is_numeric($width)||!is_numeric($height)||!is_numeric($pad_width)||!is_numeric($pad_height)) die(print "ERROR: Your width or height is a non-integer value!\n");
@@ -148,7 +148,7 @@ elseif ($mode == "-p") {
   padtile($width, $height, $pad_width, $pad_height, $in_file, $out_file);
 }
 elseif ($mode == "-b") {
-  list($width, $height, $source_file, $text_rep) = split(",", $command);
+  list($width, $height, $source_file, $text_rep) = explode(",", $command);
   // Test all input, yeah, I'm too lazy to add a comment for everything now :P
   if ($width==''||$height==''||$source_file==''||$text_rep=='') die(print "ERROR: Your command string is incomplete!\n");
   if(!is_numeric($width)||!is_numeric($height)||!file_exists($source_file)||!file_exists($text_rep)) die(print "ERROR: Your width or height is a non-integer value!\n");
