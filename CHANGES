@@ -1,5 +1,9 @@
 FEIDIAN CHANGE LOG
 
+- 0.90b -
+* Fixed compatibility with PHP 7.0.
+* Added user-submitted tile definitions to the official repository.
+
 - 0.90a -
 * And after more errors, it turns out to be DWORD. UGH!
 * Fixed an error in fontfile.php that allowed color images to be used (this

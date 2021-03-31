@@ -1,28 +1,20 @@
 <?php
+
 /*
 
-FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
+FEIDIAN Functions Library
 
-A tool for all kinds of tasks involving bitplane to bitmap graphic conversion.
-
-Version:   0.90b
+Version:   1.00
 Author:    Derrick Sobodash <derrick@sobodash.com>
-Copyright: (c) 2003, 2004, 2012 Derrick Sobodash
-Web site:  https://github.com/sobodash/feidian/
+Copyright: (c) 2003–2018 Derrick Sobodash
+Web site:  https://gitlab.com/sobodash/feidian/
 License:   BSD License <http://opensource.org/licenses/bsd-license.php>
 
 */
 
-//-----------------------------------------------------------------------------
-// FEIDIAN Subs Module
-//-----------------------------------------------------------------------------
-// This is just frequently used chunks of code for file/io, etc, that I would
-// rather not have to write 90x.
-//-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// binaryread - reads a file to a bit string
-//-----------------------------------------------------------------------------
+// binaryread(handle $filename, int $length, int $offset, bool $invert)
+// Reads a file to a bit string
 function binaryread($filename, $length, $offset, $invert) {
   $fd = fopen($filename, "rb");
   fseek($fd, $offset, SEEK_SET);
@@ -31,7 +23,7 @@ function binaryread($filename, $length, $offset, $invert) {
   // Transform our dump to a long binary string, 8-bits per byte, and pad
   // left with zeros when needed
   for($i=0; $i<strlen($fddump); $i++) {
-    $binarydump .= str_pad(decbin(hexdec(bin2hex(substr($fddump, $i, 1)))), 8, "0", STR_PAD_LEFT);
+    $binarydump .= str_pad(decbin(ord($fddump[$i])), 8, "0", STR_PAD_LEFT);
   }
   if ($invert==1) {
     $invertmap = "";
@@ -45,9 +37,8 @@ function binaryread($filename, $length, $offset, $invert) {
   return($binarydump);
 }
 
-//-----------------------------------------------------------------------------
-// hexread - reads a file to a hex string
-//-----------------------------------------------------------------------------
+// hexread(handle $filename, int $length, int $offset)
+// Reads a file to a hexadecimal string
 function hexread($filename, $length, $offset) {
   $fd = fopen($filename, "rb");
   fseek($fd, $offset, SEEK_SET);
@@ -56,7 +47,7 @@ function hexread($filename, $length, $offset) {
   // Transform our dump to a long binary string, 8-bits per byte, and pad
   // left with zeros when needed
   for($i=0; $i<strlen($fddump); $i++) {
-    $hexdump .= str_pad(bin2hex(substr($fddump, $i, 1)), 2, "0", STR_PAD_LEFT);
+    $hexdump .= str_pad(bin2hex($fddump[$i]), 2, "0", STR_PAD_LEFT);
   }
   return($hexdump);
 }
@@ -102,7 +93,7 @@ function bitmapheader_1bpp($length, $width, $height) {
                  
   // As this is a monochrome image, no palette is needed. We write the
   // first palette entry anyway just to appease the Bitmap gods
-  $rgbquad = chr(0xff) . chr(0xff) . chr(0xff) . chr(0);
+  $rgbquad = "\xff\xff\xff\x00";
   
   return($header . $info_header . $rgbquad);
 }
@@ -317,11 +308,11 @@ function bitmapheader_xbpp($length, $width, $height, $palette) {
 function getbmpinfo($in_file) {
   $fd = fopen($in_file, "rb");
   fseek($fd, 0x12, SEEK_SET);
-  $img_width  = hexdec(bin2hex(strrev(fread($fd, 4))));
+  $img_width  = unpack("V", fread($fd, 4))[1];
   fseek($fd, 0x16, SEEK_SET);
-  $img_height = hexdec(bin2hex(strrev(fread($fd, 4))));
+  $img_height = unpack("V", fread($fd, 4))[1];
   fseek($fd, 0x1c, SEEK_SET);
-  $bpp = hexdec(bin2hex(strrev(fread($fd, 2))));
+  $bpp = unpack("v", fread($fd, 2))[1];
   fclose($fd);
   return(array($img_width, $img_height, $bpp));
 }
@@ -390,24 +381,27 @@ function merge_four_planes($plane1, $plane2, $plane3, $plane4) {
 // demux_two_planes - split a color pixel to two planes
 //-----------------------------------------------------------------------------
 function demux_two_planes($bitbit) {
-  $output=str_pad(decbin(hexdec($bitbit)), 2, "0", STR_PAD_LEFT);
-  return(array(substr($output, 1, 1), substr($output, 0, 1)));
+  //$output=str_pad(decbin(hexdec($bitbit)), 2, "0", STR_PAD_LEFT);
+  //return(array(substr($output, 1, 1), substr($output, 0, 1)));
+  return(array(($bitbit & 2) >> 1, $bitbit & 1));
 }
 
 //-----------------------------------------------------------------------------
 // demux_three_planes - split a color pixel to three planes
 //-----------------------------------------------------------------------------
 function demux_three_planes($bitbit) {
-  $output=str_pad(decbin(hexdec($bitbit)), 3, "0", STR_PAD_LEFT);
-  return(array(substr($output, 2, 1), substr($output, 1, 1), substr($output, 0, 1)));
+  //$output=str_pad(decbin(hexdec($bitbit)), 3, "0", STR_PAD_LEFT);
+  //return(array(substr($output, 2, 1), substr($output, 1, 1), substr($output, 0, 1)));
+  return(array(($bitbit & 4) >> 2, ($bitbit & 2) >> 1, $bitbit & 1));
 }
 
 //-----------------------------------------------------------------------------
 // demux_four_planes - split a color pixel to four planes
 //-----------------------------------------------------------------------------
 function demux_four_planes($bitbit) {
-  $output=str_pad(decbin(hexdec($bitbit)), 4, "0", STR_PAD_LEFT);
-  return(array(substr($output, 3, 1), substr($output, 2, 1), substr($output, 1, 1), substr($output, 0, 1)));
+  //$output=str_pad(decbin(hexdec($bitbit)), 4, "0", STR_PAD_LEFT);
+  //return(array(substr($output, 3, 1), substr($output, 2, 1), substr($output, 1, 1), substr($output, 0, 1)));
+  return(array(($bitbit & 8) >> 3, ($bitbit & 4) >> 2, ($bitbit & 2) >> 1, $bitbit & 1));
 }
 
 ?>

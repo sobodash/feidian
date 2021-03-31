@@ -1,62 +1,72 @@
+# FEIDIAN #
 
-    FEIDIAN: The Freaking Easy, Indispensable Dot-Image formAt coNverter
-    Copyright (C) 2003, 2004 Derrick Sobodash
-    Version: 0.90a
-    Web    : https://github.com/sobodash/feidian
-    E-mail : derrick@sobodash.com
+FEIDIAN 1.00 (cli)
+Copyright (C) 2003-2018 Derrick Sobodash (derrick@sobodash.com)
+https://gitlab.com/sobodash/feidian
 
--------------------------------------------------------------------------------
+## Using This File ##
 
-Please read changes.txt for information about newly supported commands.
+I designed README.md as a case study to give the user a feel for how FEIDIAN
+can be applied to real-world development. I find something like this is more
+useful to a new user than a simple list of commands and syntax.
 
-For reference, this README is really more of a case study to give the user a
-feel for how this program can actually be applied to real scenarios. I think
-something like this helps people to see the actual value of a program a lot
-more than just a list of commands would.
+Please refer to COMMAND.md for a list of commands
 
--------------------------------------------------------------------------------
- . : Contents : .
--------------------------------------------------------------------------------
- i.... What is FEIDIAN?
- ii... Setting up
- iii.. Standard bitplane font format
- iv... Creating a custom tile definition
- v.... Extracting a font
- vi... Inserting a font
- vii.. Color tiles/Multiple planes
- viii. Scaling and padding
- ix... Building a dual-letter font
- x.... BCR (Binary Character Recognition)
- xi... Other Notes
- xii.. License
 
--------------------------------------------------------------------------------
- i. What is FEIDIAN?
--------------------------------------------------------------------------------
-So you've downloaded FEIDIAN. I'm already impressed. Nobody EVER uses anything
-I write, so I'm just, wow, I'm impressed.
+## Contents ##
 
-So what is FEIDIAN? FEIDIAN is a tool for converting between bitmap and
-bitplane graphic formats at any size whatsoever. If you're new to the concept
-of bitplane graphics, basically it works like this. You have a tile. It can be
-any width and any height. And tiles of this size are repeated again and again
-for as long as whatever is getting stored is being stored.
+1.   What is FEIDIAN?
+2.   Setup
+3.   Monochrome bitplane graphics
+4.   Creating a custom tile definition
+5.   Extracting a graphic
+6.   Inserting a graphic
+7.   Color bitplane graphics
+8.   Scaling and padding tiles
+9.   Building a dual-letter font
+10.  BCR (Binary Character Recognition)
+11.  Other Notes
 
--------------------------------------------------------------------------------
- iii. Setting up
--------------------------------------------------------------------------------
-FEIDIAN is fairly easy to set up, it just requires PHP. For help with
-downloading PHP and how to add it to your system path, please refer to
-the install.txt included in this archive.
 
-Once PHP is read, there's still a few more options for you to configure. These
-are all stored in settings.php. Open the file up in your favorite text editor
-(WARNING: Notepad will eat the Unix line breaks making the file one long line,
-you should use Wordpad if nothing else is available).
+## What is FEIDIAN? ##
 
-The first option is a warning and is enabled by default. It will alert you if
-your dumping pattern could produce an invalid graphic, and halt dumping. It is
-strongly recommended you leave this enabled, but to disable it, just comment
+FEIDIAN is a tool for converting between tile-based bitmap and bitplane
+graphic formats.
+
+Planar graphics are an alternative system to the chunk-based approach used in
+most modern images. Each bit of an image corresponds to one pixel on the screen.
+Instead of storing all color bits together in one location, planar graphics
+split them across multiple memory chips where they can be joined by dedicated
+display hardware. It was the most cost effective way to show graphics on early
+computers and video game hardware.
+
+Some systems have planar images based on fixed tiles since their graphics are
+directly accessed through RAM. Others store such images in tiles of any width,
+height, and color depth, as they are transferred to VRAM through software.
+
+Most planar graphic editors are GUI based and limited to certain predefined
+formats. The goal of FEIDIAN was to produce a flexible tool that could be
+incorporated into a build process and which could be extended by users to
+quickly support exotic planar formats.
+
+
+## Setup ##
+
+FEIDIAN is easy to set up on most modern operating systems. It only requires
+that the command shell have access to a PHP interpreter. If you are using OSX
+or most Linux distributions, your operating system will already have access to
+a PHP interpreter. For other Linux systems or FreeBSD, you should install your
+relevant php-cli package.
+
+Windows users will need to download PHP and append the path to PHP.EXE to their
+system's $PATH$ variable.
+
+Once PHP is installed, there are a few more options you can configure in
+settings.php. Open the file up in your favorite text editor.
+
+The first option is a warning and is enabled by default. This will alert you if
+your dumping pattern could produce an invalid graphic. It is strongly
+recommended you leave this enabled, but to disable it, just comment
 out the line (put "//" at the start of the line to comment it out).
 
 Next is your preferred graphic format. FEIDIAN can work with either BMP
@@ -99,9 +109,9 @@ high-ascii European characters in your tile definitions. This is commented out
 by default, so if you do use them in a definition, alert people to uncomment
 this line before using your tile definition!
 
--------------------------------------------------------------------------------
- iii. Standard bitplane font format
--------------------------------------------------------------------------------
+
+## Standard bitplane font format ##
+
 So let's take a VERY common tile size, 8x16. This means the tile is 8 bits
 wide and 16 bits tall. Since a byte is 8 bits, this tile would be 16 bytes in
 the file ((8*16)/8). Simple, yes? I thought so.
